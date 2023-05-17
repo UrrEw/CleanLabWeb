@@ -20,14 +20,14 @@ namespace LabWeb.Controllers
             _getLoginClaimService = getLoginClaimService;
         }
 
-        [HttpGet]
+        [HttpGet("GetAllDataList")]
         public IActionResult GetAllData()
         {
             var Data = _testService.GetAllData();
             return Ok(Data);
         }
 
-        [HttpPost("create")]
+        [HttpPost("CreateData")]
         public IActionResult CreateTest([FromBody]Test Data)
         {
             try
@@ -43,7 +43,7 @@ namespace LabWeb.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("ReadOneData")]
         public IActionResult ReadTest(Guid Id)
         {
             try
@@ -63,8 +63,8 @@ namespace LabWeb.Controllers
             }
         }
 
-        [HttpPut("{id:guid}")]
-        public IActionResult UpdateTest(Guid Id,Test updateData)
+        [HttpPut("UpdateData")]
+        public IActionResult UpdateTest([FromQuery]Guid Id,[FromForm]Test updateData)
         {
             var data = _testService.GetDataById(Id);
 
@@ -79,8 +79,8 @@ namespace LabWeb.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id:guid}")]
-        public IActionResult DeleteTest(Guid id)
+        [HttpDelete("DeleteData")]
+        public IActionResult DeleteTest([FromQuery]Guid id)
         {
             _testService.SoftDeleteTestById(id);
             return Ok();

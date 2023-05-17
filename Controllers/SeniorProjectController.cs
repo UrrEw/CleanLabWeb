@@ -114,7 +114,7 @@ namespace LabWeb.Controllers
         public IActionResult UpdateSeniorProject([FromQuery]Guid Id,[FromForm]SeniorProjectViewModel updateData)
         {
             var seniorData = _seniorprojectService.GetDataById(Id);
-            var memberData = _seniorProject_MemberService.GetDataBySeniorProjectId(Id);
+            var memberData = _seniorProject_MemberService.GetDataById(Id);
 
             if (seniorData == null)
             {
@@ -133,24 +133,14 @@ namespace LabWeb.Controllers
             seniorData.seniorproject_id = Id;
             _seniorprojectService.UpdateSeniorProject(seniorData);
 
-                foreach(var item in memberData)
-                {
-                    _seniorProject_MemberService.SoftDeleteSeniorProject_MemberByMemberId(item.members_id);
-                }
-                foreach(var newid in updateData.members_id)
-                {
-                    var i = 0;
-                    var member = memberData[i];
-                    var item = updateData.members_id[i];
-                    
-                    member.seniorproject_id = seniorData.seniorproject_id;
-                    member.members_id = newid;
-                    member.create_id = _getLoginClaimService.GetMembers_id();
-                    member.update_id = _getLoginClaimService.GetMembers_id();
-                    _seniorProject_MemberService.InsertSeniorProject_Member(member);
-                    i+= 1;        
-                }
-            
+            foreach(var item in updateData.members_id)
+            {
+                memberData.seniorproject_id = seniorData.seniorproject_id;
+                memberData.members_id = item;
+                memberData.update_id = _getLoginClaimService.GetMembers_id();
+                _seniorProject_MemberService.UpdateSeniorProject_Member(memberData);
+            }
+
             return Ok();
         }
 
