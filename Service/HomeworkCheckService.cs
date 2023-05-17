@@ -91,7 +91,7 @@ namespace LabWeb.Service
                 Data.check_member = (Guid)dr["check_member"];
                 Data.check_result = (bool)dr["check_result"];
                 Data.name = dr["name"].ToString();
-                Data.finishtime = ((DateTime)dr["finishtime"]).Date;
+                Data.finishtime = DateTime.Parse(dr["finishtime"].ToString());
                 Data.check_file = dr["check_file"].ToString();
             }
             catch(Exception e)
@@ -135,7 +135,7 @@ namespace LabWeb.Service
                     Data.check_result = (bool)dr["check_result"];
                     Data.name = dr["name"].ToString();
                     Data.check_note = dr["check_note"].ToString();
-                    Data.finishtime = ((DateTime)dr["finishtime"]).Date;
+                    Data.finishtime = DateTime.Parse(dr["finishtime"].ToString());
                     Data.check_file = dr["check_file"].ToString();
                     DataList.Add(Data);
                 }
@@ -180,7 +180,7 @@ namespace LabWeb.Service
                     Data.check_result = (bool)dr["check_result"];
                     Data.name = dr["name"].ToString();
                     Data.check_note = dr["check_note"].ToString();
-                    Data.finishtime = ((DateTime)dr["finishtime"]).Date;
+                    Data.finishtime = DateTime.Parse(dr["finishtime"].ToString());
                     Data.check_file = dr["check_file"].ToString();
                     DataList.Add(Data);
                 }
@@ -224,7 +224,7 @@ namespace LabWeb.Service
                     Data.check_result = (bool)dr["check_result"];
                     Data.name = dr["name"].ToString();
                     Data.check_note = dr["check_note"].ToString();
-                    Data.finishtime = ((DateTime)dr["finishtime"]).Date;
+                    Data.finishtime = DateTime.Parse(dr["finishtime"].ToString());
                     Data.check_file = dr["check_file"].ToString();
                     DataList.Add(Data);
                 }
@@ -283,6 +283,33 @@ namespace LabWeb.Service
         public void SoftDeleteHomeworkCheckById(Guid id)
         {
             string sql = $@"UPDATE HomeworkCheck SET is_delete = 1 WHERE homeworkcheck_id = @Id;";
+
+            try
+            {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message.ToString());
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+        #endregion
+
+        #region 是否通過
+        public void ChangeCheckStatus(Guid id)
+        {
+            string sql = $@"UPDATE HomeworkCheck SET check_result = 1 WHERE homeworkcheck_id = @Id;";
 
             try
             {

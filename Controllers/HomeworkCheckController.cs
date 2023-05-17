@@ -153,6 +153,17 @@ namespace LabWeb.Controllers
         }
         #endregion
 
+        #region 是否通過
+        [HttpPut("{id:guid}")]
+        public IActionResult ChangeCheckStatus(Guid id)
+        {
+            _homeworkCheckService.ChangeCheckStatus(id);
+            return Ok();
+        }
+        #endregion
+
+
+
         [HttpGet("DownloadFile")]
         public async Task<IActionResult> DownloadFile(string fileName)
         {
