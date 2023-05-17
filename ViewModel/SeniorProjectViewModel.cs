@@ -7,7 +7,7 @@ namespace LabWeb.ViewModel
 {
     public class SeniorProjectViewModel
     {
-        public Guid seniorproject_id {get;set;}
+        public Guid? seniorproject_id {get;set;}
         public string? senior_title  {get;set;}
 
         public int senior_year  {get;set;}

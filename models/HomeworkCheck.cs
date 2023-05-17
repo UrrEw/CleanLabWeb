@@ -9,7 +9,7 @@ namespace LabWeb.models
     public class HomeworkCheck
     {
         public Guid homeworkcheck_id {get;set;}
-        
+        public Guid homework_id{get; set;}
         public Guid student_name {get;set;}
         public Guid check_member {get;set;}
         public string? name {get;set;}

@@ -16,6 +16,8 @@ namespace LabWeb.models
 
         public string? name {get;set;}
 
+        public int entry_year{get; set;}
+
         public string? authcode {get;set;}
 
         public string?  email {get;set;}
@@ -29,5 +31,7 @@ namespace LabWeb.models
         public DateTime update_time {get;set;}
 
         public Guid update_id   {get;set;}
+
+        public bool is_delete {get; set;}
     }
 }

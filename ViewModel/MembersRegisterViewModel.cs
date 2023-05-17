@@ -12,16 +12,19 @@ namespace LabWeb.ViewModel
     {
 
         public string? account {get;set;}
-        public string? name {get;set;}
 
-        public string? authcode {get;set;}
+        public string? name {get;set;}
 
         public string?  email {get;set;}
 
+        public int entry_year{get; set;}
+
         public int level {get;set;}
+
         [DisplayName("密碼")]
         [Required(ErrorMessage ="請輸入密碼")]
         public string password { get; set; }
+        
         [DisplayName("確認密碼")]
         [Required(ErrorMessage = "請輸入確認密碼")]
         [Compare("password",ErrorMessage ="兩次密碼輸入錯誤")]

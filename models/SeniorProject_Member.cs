@@ -14,6 +14,8 @@ namespace LabWeb.models
 
         public Guid members_id {get;set;}
 
+        // public List<Guid>? updatemembers_id {get;set;}
+
         public string? name {get;set;}
 
         public DateTime create_time {get;set;}
