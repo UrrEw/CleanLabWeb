@@ -64,7 +64,7 @@ namespace LabWeb.Controllers
         }
 
         [HttpPut("UpdateData")]
-        public IActionResult UpdateTest([FromQuery]Guid Id,[FromForm]Test updateData)
+        public IActionResult UpdateTest([FromQuery]Guid Id,[FromBody]Test updateData)
         {
             var data = _testService.GetDataById(Id);
 
