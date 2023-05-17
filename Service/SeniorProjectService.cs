@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Configuration;
 using LabWeb.models;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace LabWeb.Service
 {
@@ -24,6 +25,10 @@ namespace LabWeb.Service
 
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -33,7 +38,8 @@ namespace LabWeb.Service
                     Data.seniorproject_id = (Guid)dr["seniorproject_id"];
                     Data.senior_title = dr["senior_title"].ToString();
                     var filename = dr["senior_image"].ToString();
-                    Data.senior_image = $"Image/{filename}";
+                    var hosturl = "http://localhost:5229/";
+                    Data.senior_image = hosturl+$"Image/{filename}";
                     Data.senior_content = dr["senior_content"].ToString();
                     Data.senior_year = Convert.ToInt32(dr["senior_year"]);
                     DataList.Add(Data);
@@ -62,6 +68,10 @@ namespace LabWeb.Service
             
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
 
@@ -97,6 +107,10 @@ namespace LabWeb.Service
 
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
                 cmd.Parameters.AddWithValue("@Id", Id);
@@ -105,7 +119,8 @@ namespace LabWeb.Service
                 Data.seniorproject_id = (Guid)dr["seniorproject_id"];
                 Data.senior_title = dr["senior_title"].ToString();
                 var filename = dr["senior_image"].ToString();
-                Data.senior_image = $"Image/{filename}";
+                var hosturl = "http://localhost:5229/";
+                Data.senior_image = hosturl+$"Image/{filename}";
                 Data.senior_content = dr["senior_content"].ToString();
                 Data.senior_year = Convert.ToInt32(dr["senior_year"]);
 
@@ -132,6 +147,10 @@ namespace LabWeb.Service
                             seniorproject_id = @Id;";
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
                 cmd.Parameters.AddWithValue("@Id", updateData.seniorproject_id);
@@ -159,6 +178,10 @@ namespace LabWeb.Service
 
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@Id", id);

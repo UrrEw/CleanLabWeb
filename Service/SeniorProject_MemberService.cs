@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LabWeb.models;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace LabWeb.Service
 {
@@ -25,6 +26,10 @@ namespace LabWeb.Service
 
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -67,6 +72,10 @@ namespace LabWeb.Service
             
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
 
@@ -99,6 +108,10 @@ namespace LabWeb.Service
             SeniorProject_Member Data = new SeniorProject_Member();
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
                 cmd.Parameters.AddWithValue("@Id", Id);
@@ -136,6 +149,10 @@ namespace LabWeb.Service
                             seniorproject_id = @Id;";
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
                 cmd.Parameters.AddWithValue("@Id", updateData.seniorproject_id);
@@ -160,6 +177,10 @@ namespace LabWeb.Service
 
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@Id", id);
@@ -173,6 +194,68 @@ namespace LabWeb.Service
             {
                 conn.Close();
             }
+        }
+
+        public void SoftDeleteSeniorProject_MemberByMemberId(Guid id)
+        {
+            string sql = $@"UPDATE SeniorProject_Member SET is_delete = 1 WHERE members_id = @Id;";
+
+            try
+            {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message.ToString());
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        public List<SeniorProject_Member> GetDataBySeniorProjectId(Guid Id)
+        {
+            string sql = $@"SELECT m.*,r.name FROM SeniorProject_Member m 
+                            INNER JOIN Members r ON m.members_id = r.members_id 
+                            WHERE m.seniorproject_id = @Id AND m.is_delete = 0;";
+            List<SeniorProject_Member> dataList = new List<SeniorProject_Member>();
+            try
+            {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql,conn);
+                cmd.Parameters.AddWithValue("@Id", Id);
+                SqlDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    SeniorProject_Member Data = new SeniorProject_Member();
+                    Data.seniorproject_id = (Guid)dr["seniorproject_id"];
+                    Data.members_id = (Guid)dr["members_id"];
+
+                    dataList.Add(Data);
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                dataList = null;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return dataList;
         }
     }
 }

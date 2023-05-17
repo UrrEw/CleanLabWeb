@@ -15,11 +15,16 @@ namespace LabWeb.Controllers
         private readonly HomeworkCheckService _homeworkCheckService;
         private readonly GetFileService _getFileService;
         private readonly GetLoginClaimService _getLoginClaimService;
-        public HomeworkCheckController(HomeworkCheckService homeworkCheckService,GetLoginClaimService getLoginClaimService, GetFileService getFileService)
+        private readonly HomeworkService _homeworkservice;
+        private readonly IWebHostEnvironment _env;
+
+        public HomeworkCheckController(HomeworkCheckService homeworkCheckService,GetLoginClaimService getLoginClaimService, GetFileService getFileService,IWebHostEnvironment env,HomeworkService homeworkservice)
         {
             _homeworkCheckService = homeworkCheckService;
             _getLoginClaimService = getLoginClaimService;
             _getFileService = getFileService;
+            _homeworkservice = homeworkservice;
+            _env = env;
         }
 
         #region 新增
@@ -28,9 +33,13 @@ namespace LabWeb.Controllers
         {
             try
             {
+                var data = _homeworkservice.GetDataById(Data.homework_id);
                 Data.check_file = _getFileService.CreateOneFile(Data.formfile);
                 Data.create_id = _getLoginClaimService.GetMembers_id();
                 Data.update_id = _getLoginClaimService.GetMembers_id();
+                Data.student_name = _getLoginClaimService.GetMembers_id();
+                Data.check_note = "加油";
+                Data.check_member = data.check_id;
                 _homeworkCheckService.InsertHomeworkCheck(Data);
                 return Ok();
             }
@@ -62,7 +71,46 @@ namespace LabWeb.Controllers
             }
         }
 
+        [HttpGet("ReadByName")]
+        public IActionResult ReadByName([FromQuery]Guid Id)
+        {
+            try
+            {
+                var Data = _homeworkCheckService.GetDataByName(Id);
 
+                if(Data == null)
+                {
+                    return BadRequest("NODATA");
+                }
+
+                return Ok(Data);
+            }
+            catch(Exception e)
+            {
+                return StatusCode(555, e.Message);
+            }
+        }
+
+        [HttpGet("ReadByHomework")]
+        public IActionResult ReadByHomework([FromQuery]Guid Id)
+        {
+            try
+            {
+                var Data = _homeworkCheckService.GetDataByHomework(Id);
+
+                if(Data == null)
+                {
+                    return BadRequest("NODATA");
+                }
+
+                return Ok(Data);
+            }
+            catch(Exception e)
+            {
+                return StatusCode(555, e.Message);
+            }
+        }
+        
         [HttpGet]
         public IActionResult GetAllData()
         {
@@ -104,5 +152,51 @@ namespace LabWeb.Controllers
             return Ok();
         }
         #endregion
+
+        [HttpGet("DownloadFile")]
+        public async Task<IActionResult> DownloadFile(string fileName)
+        {
+            string filePath = Path.Combine(_env.ContentRootPath, "Files", fileName);
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound();
+            }
+
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(filePath, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+
+            return File(memory, GetContentType(filePath), Path.GetFileName(filePath));
+        }
+
+        private string GetContentType(string path)
+        {
+            var types = GetMimeTypes();
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            return types[ext];
+        }
+
+        private Dictionary<string, string> GetMimeTypes()
+        {
+            return new Dictionary<string, string>
+            {
+                {".txt", "text/plain"},
+                {".pdf", "application/pdf"},
+                {".doc", "application/vnd.ms-word"},
+                {".docx", "application/vnd.ms-word"},
+                {".xls", "application/vnd.ms-excel"},
+                {".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
+                {".png", "image/png"},
+                {".jpg", "image/jpeg"},
+                {".jpeg", "image/jpeg"},
+                {".gif", "image/gif"},
+                {".csv", "text/csv"}
+            };
+        }
+
    }
 }

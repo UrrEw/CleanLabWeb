@@ -55,6 +55,7 @@ public class MembersController : ControllerBase
                 Data.email = registerMember.email;
                 Data.name = registerMember.name;
                 Data.level = registerMember.level;
+                Data.entry_year = registerMember.entry_year;
                 _membersSerivce.Register(Data);
                 string filePath = "Views/RegisterEmail.html";
                 string tempMail = System.IO.File.ReadAllText(filePath);
@@ -110,15 +111,15 @@ public class MembersController : ControllerBase
             string Role=_membersSerivce.GetRole(Data.Account);
             string token=_jwtService.GenerateToken(Data.Account,Role);
             string cookieName = _config["AppSettings:cookieName"].ToString();
+            string account = Data.Account;
 
             var cookieOptions=new CookieOptions
             {
                 HttpOnly=true,
                 Expires=DateTime.Now.AddMinutes(Convert.ToInt32(_config["AppSettings:ExpireTime"]))
             };
-            
             Response.Cookies.Append(cookieName,token,cookieOptions);
-            return Ok(token);
+            return Ok(new{token,account});
         }
         else 
         {
@@ -210,32 +211,10 @@ public class MembersController : ControllerBase
         return Ok(Role);
     }
 
-    [HttpGet("GetSenior")]
-    public ActionResult GetSenior()
+    [HttpDelete("{id:guid}")]
+    public IActionResult DeleteTest(Guid id)
     {
-        var Data = _membersSerivce.GetDataButSenior();
-        return Ok(Data);
-    }
-
-    [HttpGet("GetLoginInfo")]
-    public ActionResult GetLoginInfo([FromBody]tokenmodel token)
-    {
-        string Token = token.Token;
-        var account = _jwtService.DecodeToken(Token);
-        if (string.IsNullOrEmpty(account))
-            {
-                // JWT 解碼失敗，返回錯誤訊息
-                return BadRequest("Invalid token");
-            }
-
-            var loginInfo = _membersSerivce.GetDataByAccount(account);
-        if (loginInfo == null)
-        {
-            // 找不到登入者的資料，返回錯誤訊息或其他處理邏輯
-            return NotFound("Login info not found");
-        }
-
-        // 根據需要進行後續處理，例如回傳登入者的資料
-        return Ok(new { members_Id = loginInfo.members_id, name = loginInfo.name });
+        _membersSerivce.SoftDeleteMemberById(id);
+        return Ok();
     }
 }

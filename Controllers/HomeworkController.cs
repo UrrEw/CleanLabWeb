@@ -28,6 +28,7 @@ namespace LabWeb.Controllers
             {
                 Data.create_id = _getLoginClaimService.GetMembers_id();
                 Data.update_id = _getLoginClaimService.GetMembers_id();
+                Data.check_id = _getLoginClaimService.GetMembers_id();
                 _homeworkservice.InsertHomework(Data);
                 return Ok();
             }
@@ -45,6 +46,26 @@ namespace LabWeb.Controllers
             try
             {
                 Homework Data = _homeworkservice.GetDataById(Id);
+
+                if(Data == null)
+                {
+                    return BadRequest("NODATA");
+                }
+
+                return Ok(Data);
+            }
+            catch(Exception e)
+            {
+                return StatusCode(555, e.Message);
+            }
+        }
+
+        [HttpGet("ReadByName")]
+        public IActionResult ReadByName([FromQuery]Guid Id)
+        {
+            try
+            {
+                var Data = _homeworkservice.GetDataByName(Id);
 
                 if(Data == null)
                 {

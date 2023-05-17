@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using LabWeb.models;
 using Microsoft.Data.SqlClient;
+using System.Data;
+using System.Text;
 
 namespace LabWeb.Service
 {
@@ -19,12 +21,16 @@ namespace LabWeb.Service
         #region 新增
         public void InsertHomework(Homework newData)
         {
-            string sql =$@"INSERT INTO Homework(homework_id, check_id, homeworkcheck_id, homework_title, homework_content,start_time, 
-                end_time, create_time, create_id, update_time, update_id, is_delete) VALUES(@homework_id, @check_id, @homeworkcheck_id, 
+            string sql =$@"INSERT INTO Homework(homework_id, check_id, homework_title, homework_content,start_time, 
+                end_time, create_time, create_id, update_time, update_id, is_delete) VALUES(@homework_id, @check_id, 
                     @homework_title, @homework_content, @start_time, @end_time, @create_time, @create_id, @update_time, @update_id, 0);";
             
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
 
@@ -32,7 +38,6 @@ namespace LabWeb.Service
 
                 cmd.Parameters.AddWithValue("@homework_id", newData.homework_id);
                 cmd.Parameters.AddWithValue("@check_id", newData.check_id);
-                cmd.Parameters.AddWithValue("@homeworkcheck_id", newData.homeworkcheck_id);
                 cmd.Parameters.AddWithValue("@homework_title", newData.homework_title);
                 cmd.Parameters.AddWithValue("@homework_content", newData.homework_content);
                 cmd.Parameters.AddWithValue("@start_time", newData.start_time);
@@ -58,13 +63,17 @@ namespace LabWeb.Service
         #region 搜尋
         public Homework GetDataById(Guid Id)
         {
-            string sql = $@"SELECT m.*, r.* FROM Homework m
-                            INNER JOIN HomeworkCheck r ON m.homeworkcheck_id = r.homeworkcheck_id
-                            WHERE m.homework_id = @Id AND m.is_delete=0;";
+            string sql = $@"SELECT m.*,r.name FROM Homework m 
+                            INNER JOIN Members r ON m.check_id = r.members_id 
+                            WHERE m.homework_id = @Id AND m.is_delete = 0;";
             Homework? Data = new Homework();
 
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
                 cmd.Parameters.AddWithValue("@Id", Id);
@@ -76,6 +85,7 @@ namespace LabWeb.Service
                 Data.homework_content = dr["homework_content"].ToString();
                 Data.start_time = ((DateTime)dr["start_time"]).Date;
                 Data.end_time = ((DateTime)dr["end_time"]).Date;
+                Data.name = dr["name"].ToString();
             }
             catch(Exception e)
             {
@@ -88,29 +98,75 @@ namespace LabWeb.Service
             }
             return Data;
         }
-        public IEnumerable<Homework> GetAllData()
-        {
-            string sql =  $@"SELECT m.*, r.* FROM Homework m
-                            INNER JOIN HomeworkCheck r ON m.homeworkcheck_id = r.homeworkcheck_id
-                            WHERE m.is_delete=0;";
 
-            var DataList = new List<Homework>();
+        public List<Homework> GetDataByName(Guid Id)
+        {
+            string sql = $@"SELECT m.*,r.name FROM Homework m 
+                            INNER JOIN Members r ON m.check_id = r.members_id 
+                            WHERE m.check_id = @Id AND m.is_delete = 0;";
+             var DataList = new List<Homework>();
 
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
+                cmd.Parameters.AddWithValue("@Id", Id);
                 SqlDataReader dr = cmd.ExecuteReader();
-                while(dr.Read())
+                 while (dr.Read())
                 {
                     Homework Data = new Homework();
-                   Data.homework_id = (Guid)dr["homework_id"];
+                    Data.homework_id = (Guid)dr["homework_id"];
                     Data.check_id = (Guid)dr["check_id"];
                     Data.homework_title = dr["homework_title"].ToString();
                     Data.homework_content = dr["homework_content"].ToString();
                     Data.start_time = ((DateTime)dr["start_time"]).Date;
                     Data.end_time = ((DateTime)dr["end_time"]).Date;
+                    Data.name = dr["name"].ToString();
                     DataList.Add(Data);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message.ToString());
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return DataList;
+        }
+
+        public IEnumerable<Homework> GetAllData()
+        {
+            string sql = $@"SELECT m.*,r.name FROM Homework m
+                            INNER JOIN Members r ON m.check_id = r.members_id
+                            WHERE m.is_delete = 0;";
+             var DataList = new List<Homework>();
+
+            try
+            {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql,conn);
+                SqlDataReader dr = cmd.ExecuteReader();
+                 while (dr.Read())
+                {
+                        Homework Data = new Homework();
+                        Data.homework_id = (Guid)dr["homework_id"];
+                        Data.check_id = (Guid)dr["check_id"];
+                        Data.homework_title = dr["homework_title"].ToString();
+                        Data.homework_content = dr["homework_content"].ToString();
+                        Data.start_time = ((DateTime)dr["start_time"]).Date;
+                        Data.end_time = ((DateTime)dr["end_time"]).Date;
+                        Data.name = dr["name"].ToString();
+                        DataList.Add(Data);
                 }
             }
             catch (Exception e)
@@ -138,6 +194,10 @@ namespace LabWeb.Service
                             homework_id = @Id;";
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
                 cmd.Parameters.AddWithValue("@Id", updateData.homework_id);
@@ -167,6 +227,10 @@ namespace LabWeb.Service
 
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@Id", id);

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LabWeb.models;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 
 namespace LabWeb.Service
@@ -26,6 +27,10 @@ namespace LabWeb.Service
 
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -63,6 +68,10 @@ namespace LabWeb.Service
             
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
 
@@ -98,6 +107,10 @@ namespace LabWeb.Service
 
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
                 cmd.Parameters.AddWithValue("@Id", Id);
@@ -131,6 +144,10 @@ namespace LabWeb.Service
                             reservetime_id = @Id;";
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
                 cmd.Parameters.AddWithValue("@Id", updateData.reservetime_id);
@@ -157,6 +174,10 @@ namespace LabWeb.Service
 
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@Id", id);

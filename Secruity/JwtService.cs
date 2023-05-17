@@ -55,35 +55,6 @@ namespace LabWeb.Secruity
             return jwt;
         }
 
-        public string DecodeToken(string jwt)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var validationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:SecretKey").Value)),
-                ValidateIssuer = false,
-                ValidateAudience = false
-            };
-
-            try
-            {
-                var principal = tokenHandler.ValidateToken(jwt, validationParameters, out var validatedToken);
-                var account = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
-                var role = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-                return account;
-            }
-            catch (SecurityTokenException)
-            {
-                // Token 無效
-                return null;
-            }
-            catch (Exception)
-            {
-                // 解碼過程中發生錯誤
-                return null;
-            }
-        }
-
+            
     }
 }
