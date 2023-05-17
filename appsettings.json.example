@@ -1,0 +1,17 @@
+{
+  "ConnectionStrings": {
+    "DB":"Server=localhost;Database=LabWebDB;Trusted_Connection=True;TrustServerCertificate=true;User ID=;Password=;"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AppSettings": {
+    "CookieName": "IROHACUTE",
+    "SecretKey":"AGoodBookWHATNOTENOUGH",
+    "ExpireTime": 30
+  },
+  "AllowedHosts": "*"
+}
