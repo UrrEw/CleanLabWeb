@@ -19,7 +19,7 @@ namespace LabWeb.Service
 
         public IEnumerable<Test> GetAllData()
         {
-            string sql = $@"SELECT * FROM Test WHERE is_delete = 0;";
+            string sql = $@"SELECT * FROM Test WHERE is_delete = 0 ORDER BY end_date;";
             var DataList = new List<Test>();
 
             try
