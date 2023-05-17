@@ -15,7 +15,13 @@ namespace LabWeb.Service
             {
                 if(!FormImage.ContentType.StartsWith("image/"))
                 {
-                    return "檔案格式不正確";
+                    throw new FormatException("檔案格式不正確");
+                }
+
+                var maxFileSizeInBytes = 3 * 1024 * 1024; 
+                if (FormImage.Length > maxFileSizeInBytes)
+                {
+                    throw new InvalidOperationException("圖片大小超過限制");
                 }
 
                 string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(FormImage.FileName);
@@ -44,9 +50,15 @@ namespace LabWeb.Service
                 {
                     if(!formfile.ContentType.StartsWith("image/"))
                     {
-                        return null;
+                        throw new FormatException("檔案格式不正確");
                     }
                     
+                    var maxFileSizeInBytes = 3 * 1024 * 1024; 
+                    if (formfile.Length > maxFileSizeInBytes)
+                    {
+                        throw new InvalidOperationException("圖片大小超過限制");
+                    }
+
                     string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(formfile.FileName);
 
                     var filePath = Path.Combine("wwwroot/Image", uniqueFileName);
