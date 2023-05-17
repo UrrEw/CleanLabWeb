@@ -49,7 +49,6 @@ namespace LabWeb.Controllers.Api
             }
         }
 
-        [Authorize(Roles="Admin")]
         [HttpGet("ReadOneData")]
         public IActionResult ReadThesis(Guid Id)
         {
