@@ -21,7 +21,7 @@ namespace LabWeb.Service
                     return "檔案格式錯誤";
                 }
 
-                string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(FormFile.FileName);
+                string uniqueFileName = FormFile.FileName;
 
                 var filePath = Path.Combine("File", uniqueFileName);
                 using(var stream = new FileStream(filePath, FileMode.Create))
