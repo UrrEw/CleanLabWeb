@@ -18,7 +18,7 @@ namespace LabWeb.Service
             {
                 if(!FormFile.ContentType.StartsWith("application/"))
                 {
-                    return "檔案格式不正確";
+                    return "檔案格式不好";
                 }
 
                 string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(FormFile.FileName);
