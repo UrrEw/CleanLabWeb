@@ -545,5 +545,36 @@ namespace LabWeb.Service
             }
             return Role;
         }
+
+        public List<Members> GetDataReserveAllData()
+        {
+            
+            string sql = $@"SELECT d.members_id,m.name FROM Tester d
+                            INNER JOIN Members m ON d.members_id = m.members_id
+                            ORDER BY ;";
+            var DataList = new List<Members>();
+            try
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                SqlDataReader dr = cmd.ExecuteReader();
+                while(dr.Read())
+                {
+                    Members Data = new Members();
+                    Data.members_id = (Guid)dr["members_id"];
+                    Data.name = dr["name"].ToString();
+                    DataList.Add(Data);
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return DataList;
+        }
     }
 }
