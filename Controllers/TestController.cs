@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using LabWeb.Service;
 using LabWeb.models;
+using LabWeb.Secruity;
 
 namespace LabWeb.Controllers
 {
@@ -14,17 +15,26 @@ namespace LabWeb.Controllers
     {
         private readonly TestService _testService;
         private readonly GetLoginClaimService _getLoginClaimService;
-        public TestController(TestService testService,GetLoginClaimService getLoginClaimService)
+        private readonly JwtService _jwtService;
+
+        private readonly MembersDBService _membersDBService;
+        public TestController(TestService testService,GetLoginClaimService getLoginClaimService,JwtService jwtService,MembersDBService membersDBService)
         {
             _testService = testService;
             _getLoginClaimService = getLoginClaimService;
+            _jwtService = jwtService;
+            _membersDBService = membersDBService;
         }
 
         [HttpGet("GetAllDataList")]
-        public IActionResult GetAllData()
+        public IActionResult GetAllData([FromBody]tokenmodel token)
         {
-            var Data = _testService.GetAllData();
-            return Ok(Data);
+            string Token = token.Token;
+            var account = _jwtService.DecodeToken(Token);
+            var members = _membersDBService.GetDataByAccount(account);
+            var Data = _testService.GetAllData(members.members_id);
+            var DataList = Data;
+            return Ok(DataList);
         }
 
         [HttpPost("CreateData")]

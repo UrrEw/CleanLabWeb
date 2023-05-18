@@ -33,5 +33,9 @@ namespace LabWeb.models
         public Guid update_id {get;set;}
 
         public bool is_delete {get;set;}
+
+        public string? Status {get;set;}
+
+        public bool is_success {get;set;}
     }
 }

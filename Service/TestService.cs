@@ -11,15 +11,19 @@ namespace LabWeb.Service
     public class TestService
     {
         private readonly SqlConnection conn;
+        private readonly GetLoginClaimService _getLoginClaimService;
 
-        public TestService(SqlConnection connection)
+        public TestService(SqlConnection connection,GetLoginClaimService getLoginClaimService)
         {
             conn = connection;
+            _getLoginClaimService = getLoginClaimService;
         }
 
-        public IEnumerable<Test> GetAllData()
+        public IEnumerable<Test> GetAllData(Guid Id)
         {
-            string sql = $@"SELECT * FROM Test WHERE is_delete = 0 ORDER BY end_date;";
+            string sql = $@"SELECT m.*,t.is_success FROM Test m 
+                            LEFT JOIN Tester t ON m.test_id = t.test_id AND t.members_id = @Id
+                            WHERE m.is_delete = 0 ORDER BY end_date;";
             var DataList = new List<Test>();
 
             try
@@ -30,6 +34,7 @@ namespace LabWeb.Service
                 }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
+                cmd.Parameters.AddWithValue("@Id", Id);
                 SqlDataReader dr = cmd.ExecuteReader();
                 while(dr.Read())
                 {
@@ -39,6 +44,25 @@ namespace LabWeb.Service
                     Data.test_content = dr["test_content"].ToString();
                     Data.start_date = ((DateTime)dr["start_date"]).Date;
                     Data.end_date = ((DateTime)dr["end_date"]).Date;
+                    if (dr["is_success"] != DBNull.Value)
+                    {
+                        Data.is_success = Convert.ToBoolean(dr["is_success"]);
+                        if (Data.is_success)
+                        {
+                            Data.Status = "預約成功";
+                        }
+                        else
+                        {
+                            Data.Status = "尚未預約";
+                        }
+                    }
+                    else
+                    {
+                        Data.is_success = false;
+                        Data.Status = "尚未預約";
+                    }
+
+                    
                     DataList.Add(Data);
                 }
             }
@@ -187,6 +211,36 @@ namespace LabWeb.Service
             {
                 conn.Close();
             }
+        }
+
+        public string GetTesterStatus(Guid Id)
+        {
+            var sql = @$"SELECT is_success FROM Tester WHERE members_id = @Id ;";
+            var result = string.Empty;
+
+            try
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql,conn);
+                cmd.Parameters.AddWithValue("@Id", Id);
+                SqlDataReader dr = cmd.ExecuteReader();
+                dr.Read();
+                var is_success = Convert.ToBoolean(dr["is_success"]);
+                if(is_success)
+                {
+                    result = "預約成功";
+                }
+                else
+                {
+                    result = "尚未預約";
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            
+            return result;
         }
     }
 }
