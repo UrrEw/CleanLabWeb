@@ -500,7 +500,7 @@ namespace LabWeb.Service
         public List<Members> GetDataMemberLevelList()
         {
             
-            string sql = $@"SELECT members_id,name,account FROM MEMBERS WHERE authcode = ''; ";
+            string sql = $@"SELECT members_id,name,level FROM MEMBERS WHERE authcode = ''; ";
             var DataList = new List<Members>();
             try
             {
@@ -512,8 +512,8 @@ namespace LabWeb.Service
                     Members Data = new Members();
                     Data.members_id = (Guid)dr["members_id"];
                     Data.name = dr["name"].ToString();
-                    Data.account = dr["account"].ToString();
-                    Data.Role = GetRole(Data.account);
+                    Data.level = Convert.ToInt32(dr["level"]);
+                    Data.Role = GetMemberLevel(Data.level);
                     DataList.Add(Data);
                 }
             }
@@ -528,6 +528,22 @@ namespace LabWeb.Service
             return DataList;
         }
 
-        
+        public string GetMemberLevel(int level)
+        {
+            var Role = string.Empty;
+            if (level == 2)
+            {
+                Role = "Senior";
+            }
+            if (level == 1)
+            {
+                Role = "Senior";
+            }
+            if (level == 0)
+            {
+                Role = "Admin";
+            }
+            return Role;
+        }
     }
 }
