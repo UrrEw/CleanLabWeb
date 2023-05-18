@@ -253,21 +253,22 @@ public class MembersController : ControllerBase
         return Ok(Data);
     }
 
-    [HttpPost("GetMemberLevel")]
+    [HttpGet("GetMemberLevel")]
     public ActionResult GetMemberLevel()
     {
         var Data = _membersSerivce.GetDataMemberLevelList();
         return Ok(Data);
     }
 
-    [HttpPost("ChangeMemberLevel")]
-    public ActionResult ChangeMemberLevel(List<Members> dataList)
+    [HttpPut("ChangeMemberLevel")]
+    public ActionResult ChangeMemberLevel([FromBody]List<Members> dataList)
     {
-            foreach (var data in dataList)
+        foreach (var data in dataList)
         {
+            data.update_id = _getLoginClaimService.GetMembers_id();
             _membersSerivce.ChangeMemberLevel(data);
         }
-    return Ok("ChangeMemberLevel completed");
+        return Ok();
     }
 
 }

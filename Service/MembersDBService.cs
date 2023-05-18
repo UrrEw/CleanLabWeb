@@ -91,7 +91,7 @@ namespace LabWeb.Service
         public Members GetDataByAccount(string Account)
         {
             Members Data = new Members();
-            string sql = $@"SELECT * FROM MEMBERS WHERE account='{Account} AND authcode='{string.Empty}' ";
+            string sql = $@"SELECT * FROM Members WHERE account='{Account}' AND authcode = ''; ";
             try
             {
                 conn.Open();
@@ -319,7 +319,7 @@ namespace LabWeb.Service
         public List<Members> GetDataByAccountList()
         {
             List<Members> DataList = new List<Members>();
-            string sql = $@"SELECT * FROM MEMBERS WHERE authcode='{string.Empty}";
+            string sql = $@"SELECT * FROM MEMBERS WHERE authcode = '';";
             try
             {
                 conn.Open();
@@ -378,7 +378,7 @@ namespace LabWeb.Service
         public List<Members> GetDataButOnlyIdAndName()
         {
             
-            string sql = $@"SELECT members_id,name FROM MEMBERS WHERE authcode='{string.Empty}";
+            string sql = $@"SELECT members_id,name FROM MEMBERS WHERE authcode = '';";
             var DataList = new List<Members>();
             try
             {
@@ -408,7 +408,7 @@ namespace LabWeb.Service
         public List<Members> GetDataButSenior()
         {
             
-            string sql = $@"SELECT members_id,name FROM MEMBERS WHERE level = 1 AND authcode='{string.Empty} ";
+            string sql = $@"SELECT members_id,name FROM MEMBERS WHERE level = 1 AND authcode = ''; ";
             var DataList = new List<Members>();
             try
             {
@@ -500,7 +500,7 @@ namespace LabWeb.Service
         public List<Members> GetDataMemberLevelList()
         {
             
-            string sql = $@"SELECT members_id,name,account FROM MEMBERS WHERE authcode='{string.Empty} ";
+            string sql = $@"SELECT members_id,name,account FROM MEMBERS WHERE authcode = ''; ";
             var DataList = new List<Members>();
             try
             {
