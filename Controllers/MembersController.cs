@@ -274,4 +274,10 @@ public class MembersController : ControllerBase
         return Ok();
     }
 
+    [HttpGet("GetOneMemberLevel")]
+    public ActionResult GetOneMemberLevel([FromQuery]Guid Id)
+    {
+        Members Data = _membersSerivce.GetOneDataMemberLevel(Id);
+        return Ok(Data);
+    }
 }
