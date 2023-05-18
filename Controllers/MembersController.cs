@@ -55,6 +55,7 @@ public class MembersController : ControllerBase
                 Data.email = registerMember.email;
                 Data.name = registerMember.name;
                 Data.level = registerMember.level;
+                Data.entry_year = registerMember.entry_year;
                 _membersSerivce.Register(Data);
                 string filePath = "Views/RegisterEmail.html";
                 string tempMail = System.IO.File.ReadAllText(filePath);
@@ -273,5 +274,4 @@ public class MembersController : ControllerBase
         return Ok();
     }
 
-    
 }

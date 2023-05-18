@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.Data.SqlClient;
 using LabWeb.models;
 using LabWeb.ViewModel;
+using System.Data;
 
 namespace LabWeb.Service
 {
@@ -17,31 +18,35 @@ namespace LabWeb.Service
 
 
         #region 註冊
-        #region 新增會員
+         #region 新增會員
         public void Register(Members newMember)
         {
             newMember.password = HashPassword(newMember.password);
             string sql = string.Empty;
             if (newMember.level == 2)
             {
-                sql = $@"INSERT INTO Members (members_id, account, password, name, authcode, email, level, create_id, 
-                    create_time, update_id, update_time) VALUES (@members_id, @account, @password, @name, @authcode, @email,
-                        '2', @create_id, @create_time, @update_id, @update_time)";
+                sql = $@"INSERT INTO Members (members_id, account, password, name, entry_year, authcode, email, level, create_id, 
+                    create_time, update_id, update_time, is_delete) VALUES (@members_id, @account, @password, @name, @entry_year,@authcode, @email,
+                        '2', @create_id, @create_time, @update_id, @update_time, @is_delete)";
             }
             else if (newMember.level == 1)
             {
-                sql = $@"INSERT INTO Members (members_id, account, password, name, authcode, email, level, create_id, 
-                    create_time, update_id, update_time) VALUES (@members_id, @account, @password, @name, @authcode, @email,
-                        '1', @create_id, @create_time, @update_id, @update_time)";
+               sql = $@"INSERT INTO Members (members_id, account, password, name, entry_year, authcode, email, level, create_id, 
+                    create_time, update_id, update_time, is_delete) VALUES (@members_id, @account, @password, @name, @entry_year,@authcode, @email,
+                        '1', @create_id, @create_time, @update_id, @update_time, @is_delete)";
             }
             else if (newMember.level == 0)
             {
-                sql = $@"INSERT INTO Members (members_id, account, password, name, authcode, email, level, create_id, 
-                    create_time, update_id, update_time) VALUES (@members_id, @account, @password, @name, @authcode, @email,
-                        '0', @create_id, @create_time, @update_id, @update_time)";
+                sql = $@"INSERT INTO Members (members_id, account, password, name, entry_year, authcode, email, level, create_id, 
+                    create_time, update_id, update_time, is_delete) VALUES (@members_id, @account, @password, @name, @entry_year,@authcode, @email,
+                        '0', @create_id, @create_time, @update_id, @update_time, @is_delete)";
             }
             try
             {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
 
@@ -52,6 +57,7 @@ namespace LabWeb.Service
                 cmd.Parameters.AddWithValue("@account", newMember.account);
                 cmd.Parameters.AddWithValue("@password", newMember.password);
                 cmd.Parameters.AddWithValue("@name", newMember.name);
+                cmd.Parameters.AddWithValue("@entry_year", newMember.entry_year);
                 cmd.Parameters.AddWithValue("@authcode", newMember.authcode);
                 cmd.Parameters.AddWithValue("@email", newMember.email);
                 cmd.Parameters.AddWithValue("@level", newMember.level);
@@ -59,6 +65,7 @@ namespace LabWeb.Service
                 cmd.Parameters.AddWithValue("@create_time",DateTime.Now);
                 cmd.Parameters.AddWithValue("@update_id", newMember.update_id);
                 cmd.Parameters.AddWithValue("@update_time", DateTime.Now);
+                cmd.Parameters.AddWithValue("@is_delete", newMember.is_delete);
 
                 cmd.ExecuteNonQuery();
             }
@@ -94,6 +101,10 @@ namespace LabWeb.Service
             string sql = $@"SELECT * FROM Members WHERE account='{Account}' AND authcode = ''; ";
             try
             {
+                 if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -148,6 +159,10 @@ namespace LabWeb.Service
                     string sql = $@"UPDATE MEMBERS SET authcode = '{string.Empty}' WHERE account= @account";
                     try
                     {
+                         if (conn.State != ConnectionState.Closed)
+                        {
+                            conn.Close();
+                        }
                         conn.Open();
                         SqlCommand cmd = new SqlCommand(sql, conn);
 
@@ -248,6 +263,10 @@ namespace LabWeb.Service
                 string sql = $@"UPDATE MEMBERS SET password = @password WHERE account= @account ";
                 try
                 {
+                     if (conn.State != ConnectionState.Closed)
+                    {
+                        conn.Close();
+                    }
                     conn.Open();
                     SqlCommand cmd = new SqlCommand(sql, conn);
 
@@ -281,6 +300,10 @@ namespace LabWeb.Service
 
              try
                 {
+                     if (conn.State != ConnectionState.Closed)
+                    {
+                        conn.Close();
+                    }
                     conn.Open();
                     SqlCommand cmd = new SqlCommand(sql, conn);
 
@@ -322,6 +345,10 @@ namespace LabWeb.Service
             string sql = $@"SELECT * FROM MEMBERS WHERE authcode = '';";
             try
             {
+                 if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -357,6 +384,10 @@ namespace LabWeb.Service
 
             try
             {
+                 if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@Id", newLevel.members_id);
@@ -382,6 +413,10 @@ namespace LabWeb.Service
             var DataList = new List<Members>();
             try
             {
+                 if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -412,6 +447,10 @@ namespace LabWeb.Service
             var DataList = new List<Members>();
             try
             {
+                 if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -444,6 +483,10 @@ namespace LabWeb.Service
             var DataList = new List<Members>();
             try
             {
+                 if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -475,6 +518,10 @@ namespace LabWeb.Service
             var DataList = new List<Members>();
             try
             {
+                 if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -504,6 +551,10 @@ namespace LabWeb.Service
             var DataList = new List<Members>();
             try
             {
+                 if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -555,6 +606,10 @@ namespace LabWeb.Service
             var DataList = new List<Members>();
             try
             {
+                 if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 SqlDataReader dr = cmd.ExecuteReader();
