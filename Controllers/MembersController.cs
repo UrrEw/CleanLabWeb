@@ -238,4 +238,18 @@ public class MembersController : ControllerBase
         // 根據需要進行後續處理，例如回傳登入者的資料
         return Ok(new { members_Id = loginInfo.members_id, name = loginInfo.name });
     }
+
+    [HttpGet("GetSuccessReserve")]
+    public ActionResult GetSuccessReserve()
+    {
+        var Data = _membersSerivce.GetDataSuccessReserve();
+        return Ok(Data);
+    }
+
+    [HttpGet("GetFailReserve")]
+    public ActionResult GetFailReserve()
+    {
+        var Data = _membersSerivce.GetDataFailReserve();
+        return Ok(Data);
+    }
 }
