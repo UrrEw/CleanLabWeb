@@ -153,11 +153,20 @@ namespace LabWeb.Controllers
         }
         #endregion
 
-        #region 是否通過
-        [HttpPut("{id:guid}")]
-        public IActionResult ChangeCheckStatus(Guid id)
+       #region 是否通過
+        [HttpPut("ChangeCheckStatus")]
+        public IActionResult ChangeCheckStatus([FromQuery]Guid Id,[FromForm]HomeworkCheck ChangeData)
         {
-            _homeworkCheckService.ChangeCheckStatus(id);
+            var data = _homeworkCheckService.GetDataById(Id);
+
+            if (data == null)
+            {
+                return NotFound();
+            }
+
+            ChangeData.homeworkcheck_id = Id;
+            _homeworkCheckService.ChangeStatus(ChangeData);
+
             return Ok();
         }
         #endregion

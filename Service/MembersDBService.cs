@@ -192,7 +192,7 @@ namespace LabWeb.Service
                 {
                     if (PasswordCheck(LoginMember, Password))
                     {
-                        return "";
+                        return LoginMember.name;
                     }
                     else
                     {
