@@ -11,13 +11,15 @@ namespace LabWeb.Service
     public class TestService
     {
         private readonly SqlConnection conn;
+        private readonly GetLoginClaimService _getLoginClaimService;
 
-        public TestService(SqlConnection connection)
+        public TestService(SqlConnection connection,GetLoginClaimService getLoginClaimService)
         {
             conn = connection;
+            _getLoginClaimService = getLoginClaimService;
         }
 
-        public IEnumerable<Test> GetAllData()
+        public IEnumerable<Test> GetAllData(Guid Id)
         {
             string sql = $@"SELECT * FROM Test WHERE is_delete = 0 ORDER BY end_date;";
             var DataList = new List<Test>();
@@ -39,6 +41,7 @@ namespace LabWeb.Service
                     Data.test_content = dr["test_content"].ToString();
                     Data.start_date = ((DateTime)dr["start_date"]).Date;
                     Data.end_date = ((DateTime)dr["end_date"]).Date;
+                    
                     DataList.Add(Data);
                 }
             }
@@ -187,6 +190,43 @@ namespace LabWeb.Service
             {
                 conn.Close();
             }
+        }
+
+        public string GetTesterStatus(Guid Id)
+        {
+            var sql = @$"SELECT is_success FROM Tester WHERE members_id = @Id ;";
+            string result = string.Empty;
+
+            try
+            {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql,conn);
+                cmd.Parameters.AddWithValue("@Id", Id);
+                SqlDataReader dr = cmd.ExecuteReader();
+                dr.Read();
+                var is_success = Convert.ToBoolean(dr["is_success"]);
+                if(is_success)
+                {
+                    result = "已經預約";
+                }
+                else
+                {
+                    result = "尚未預約";
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return result;
         }
     }
 }
