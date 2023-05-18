@@ -31,9 +31,10 @@ namespace LabWeb.Controllers
         {
             string Token = token.Token;
             var account = _jwtService.DecodeToken(Token);
-            var DataList = _membersDBService.GetDataByAccount(account);
-            var Data = _testService.GetAllData(DataList.members_id);
-            return Ok(Data);
+            var members = _membersDBService.GetDataByAccount(account);
+            var Data = _testService.GetAllData(members.members_id);
+            var DataList = Data;
+            return Ok(DataList);
         }
 
         [HttpPost("CreateData")]
