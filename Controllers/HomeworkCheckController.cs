@@ -70,7 +70,7 @@ namespace LabWeb.Controllers
                 return StatusCode(555, e.Message);
             }
         }
-
+        
         [HttpGet("ReadByName")]
         public IActionResult ReadByName([FromQuery]Guid Id)
         {
