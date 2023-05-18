@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Data.SqlClient;
 using LabWeb.models;
-
+using LabWeb.ViewModel;
 
 namespace LabWeb.Service
 {
@@ -496,5 +496,38 @@ namespace LabWeb.Service
             }
             return DataList;
         }
+
+        public List<Members> GetDataMemberLevelList()
+        {
+            
+            string sql = $@"SELECT members_id,name,account FROM MEMBERS WHERE authcode='{string.Empty} ";
+            var DataList = new List<Members>();
+            try
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                SqlDataReader dr = cmd.ExecuteReader();
+                while(dr.Read())
+                {
+                    Members Data = new Members();
+                    Data.members_id = (Guid)dr["members_id"];
+                    Data.name = dr["name"].ToString();
+                    Data.account = dr["account"].ToString();
+                    Data.Role = GetRole(Data.account);
+                    DataList.Add(Data);
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return DataList;
+        }
+
+        
     }
 }

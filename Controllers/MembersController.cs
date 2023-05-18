@@ -252,4 +252,22 @@ public class MembersController : ControllerBase
         var Data = _membersSerivce.GetDataFailReserve();
         return Ok(Data);
     }
+
+    [HttpPost("GetMemberLevel")]
+    public ActionResult GetMemberLevel()
+    {
+        var Data = _membersSerivce.GetDataMemberLevelList();
+        return Ok(Data);
+    }
+
+    [HttpPost("ChangeMemberLevel")]
+    public ActionResult ChangeMemberLevel(List<Members> dataList)
+    {
+            foreach (var data in dataList)
+        {
+            _membersSerivce.ChangeMemberLevel(data);
+        }
+    return Ok("ChangeMemberLevel completed");
+    }
+
 }
