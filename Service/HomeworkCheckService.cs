@@ -306,11 +306,14 @@ namespace LabWeb.Service
         }
         #endregion
 
-        #region 是否通過
-        public void ChangeCheckStatus(Guid id)
+         #region 是否通過
+        public void ChangeStatus(HomeworkCheck updateData)
         {
-            string sql = $@"UPDATE HomeworkCheck SET check_result = 1 WHERE homeworkcheck_id = @Id;";
-
+            string sql = $@"UPDATE HomeworkCheck 
+                            SET 
+                            check_result = @check_result
+                            WHERE 
+                            homeworkcheck_id = @Id;";
             try
             {
                 if (conn.State != ConnectionState.Closed)
@@ -318,11 +321,12 @@ namespace LabWeb.Service
                     conn.Close();
                 }
                 conn.Open();
-                SqlCommand cmd = new SqlCommand(sql, conn);
-                cmd.Parameters.AddWithValue("@Id", id);
+                SqlCommand cmd = new SqlCommand(sql,conn);
+                cmd.Parameters.AddWithValue("@Id", updateData.homeworkcheck_id);
+                cmd.Parameters.AddWithValue("@check_result", updateData.check_result);
                 cmd.ExecuteNonQuery();
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 throw new Exception(e.Message.ToString());
             }

@@ -105,11 +105,13 @@ public class MembersController : ControllerBase
     {
 
         string Validate=_membersSerivce.LoginCheck(Data.Account,Data.Password);
-        if(string.IsNullOrWhiteSpace(Validate))
+        if(!string.IsNullOrWhiteSpace(Validate))
         {
             string Role=_membersSerivce.GetRole(Data.Account);
             string token=_jwtService.GenerateToken(Data.Account,Role);
             string cookieName = _config["AppSettings:cookieName"].ToString();
+            string account = Data.Account;
+            string name = Validate;
 
             var cookieOptions=new CookieOptions
             {
@@ -118,7 +120,7 @@ public class MembersController : ControllerBase
             };
             
             Response.Cookies.Append(cookieName,token,cookieOptions);
-            return Ok(token);
+            return Ok(new{token,account,name});
         }
         else 
         {
