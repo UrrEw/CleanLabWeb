@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Data.SqlClient;
 using LabWeb.models;
-
+using LabWeb.ViewModel;
 
 namespace LabWeb.Service
 {
@@ -91,7 +91,7 @@ namespace LabWeb.Service
         public Members GetDataByAccount(string Account)
         {
             Members Data = new Members();
-            string sql = $@"SELECT * FROM MEMBERS WHERE account='{Account}' ";
+            string sql = $@"SELECT * FROM Members WHERE account='{Account}' AND authcode = ''; ";
             try
             {
                 conn.Open();
@@ -319,7 +319,7 @@ namespace LabWeb.Service
         public List<Members> GetDataByAccountList()
         {
             List<Members> DataList = new List<Members>();
-            string sql = $@"SELECT * FROM MEMBERS";
+            string sql = $@"SELECT * FROM MEMBERS WHERE authcode = '';";
             try
             {
                 conn.Open();
@@ -378,7 +378,7 @@ namespace LabWeb.Service
         public List<Members> GetDataButOnlyIdAndName()
         {
             
-            string sql = $@"SELECT members_id,name FROM MEMBERS";
+            string sql = $@"SELECT members_id,name FROM MEMBERS WHERE authcode = '';";
             var DataList = new List<Members>();
             try
             {
@@ -408,7 +408,7 @@ namespace LabWeb.Service
         public List<Members> GetDataButSenior()
         {
             
-            string sql = $@"SELECT members_id,name FROM MEMBERS WHERE level = 1 ";
+            string sql = $@"SELECT members_id,name FROM MEMBERS WHERE level = 1 AND authcode = ''; ";
             var DataList = new List<Members>();
             try
             {
@@ -433,6 +433,117 @@ namespace LabWeb.Service
                 conn.Close();
             }
             return DataList;
+        }
+
+        public List<Members> GetDataSuccessReserve()
+        {
+            
+            string sql = $@"SELECT d.members_id,m.name FROM Tester d
+                            INNER JOIN Members m ON d.members_id = m.members_id
+                            WHERE d.is_success = 1 ";
+            var DataList = new List<Members>();
+            try
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                SqlDataReader dr = cmd.ExecuteReader();
+                while(dr.Read())
+                {
+                    Members Data = new Members();
+                    Data.members_id = (Guid)dr["members_id"];
+                    Data.name = dr["name"].ToString();
+                    DataList.Add(Data);
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return DataList;
+        }
+
+        public List<Members> GetDataFailReserve()
+        {
+            
+            string sql = $@"SELECT d.members_id,m.name FROM Tester d
+                            INNER JOIN Members m ON d.members_id = m.members_id
+                            WHERE d.is_success = 0 ";
+            var DataList = new List<Members>();
+            try
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                SqlDataReader dr = cmd.ExecuteReader();
+                while(dr.Read())
+                {
+                    Members Data = new Members();
+                    Data.members_id = (Guid)dr["members_id"];
+                    Data.name = dr["name"].ToString();
+                    DataList.Add(Data);
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return DataList;
+        }
+
+        public List<Members> GetDataMemberLevelList()
+        {
+            
+            string sql = $@"SELECT members_id,name,level FROM MEMBERS WHERE authcode = ''; ";
+            var DataList = new List<Members>();
+            try
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                SqlDataReader dr = cmd.ExecuteReader();
+                while(dr.Read())
+                {
+                    Members Data = new Members();
+                    Data.members_id = (Guid)dr["members_id"];
+                    Data.name = dr["name"].ToString();
+                    Data.level = Convert.ToInt32(dr["level"]);
+                    Data.Role = GetMemberLevel(Data.level);
+                    DataList.Add(Data);
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return DataList;
+        }
+
+        public string GetMemberLevel(int level)
+        {
+            var Role = string.Empty;
+            if (level == 2)
+            {
+                Role = "Senior";
+            }
+            if (level == 1)
+            {
+                Role = "Senior";
+            }
+            if (level == 0)
+            {
+                Role = "Admin";
+            }
+            return Role;
         }
     }
 }
