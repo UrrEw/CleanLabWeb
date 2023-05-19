@@ -30,6 +30,7 @@ namespace LabWeb.Controllers
 
         #region 新增
         [HttpPost("create")]
+        [RequestSizeLimit(104857600)]
         public IActionResult CreateHomeworkCheck([FromForm]HomeworkCheck Data)
         {
             try
