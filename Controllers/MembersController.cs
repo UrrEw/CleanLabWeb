@@ -264,13 +264,12 @@ public class MembersController : ControllerBase
     }
 
     [HttpPut("ChangeMemberLevel")]
-    public ActionResult ChangeMemberLevel([FromBody]List<Members> dataList)
+    public ActionResult ChangeMemberLevel([FromBody]Members data)
     {
-        foreach (var data in dataList)
-        {
+
             data.update_id = _getLoginClaimService.GetMembers_id();
             _membersSerivce.ChangeMemberLevel(data);
-        }
+
         return Ok();
     }
 
