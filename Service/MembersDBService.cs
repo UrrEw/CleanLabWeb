@@ -547,7 +547,7 @@ namespace LabWeb.Service
         public List<Members> GetDataMemberLevelList()
         {
             
-            string sql = $@"SELECT members_id,name,level,entry_year FROM MEMBERS WHERE authcode = ''; ";
+            string sql = $@"SELECT members_id,name,level,entry_year FROM MEMBERS WHERE authcode = '' AND is_delete=0; ";
             var DataList = new List<Members>();
             try
             {
@@ -664,6 +664,27 @@ namespace LabWeb.Service
                 conn.Close();
             }
             return DataList;
+        }
+
+        public void DeleteMember(Guid Id)
+        {
+            string sql = @$"UPDATE Members SET is_delete = 1 WHERE members_id = @Id;";
+
+            try
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Id", Id);
+                cmd.ExecuteNonQuery();
+            }
+            catch(Exception e)
+            {
+                throw new Exception(e.Message.ToString());
+            }
+            finally
+            {
+                conn.Close();
+            }
         }
     }
 }

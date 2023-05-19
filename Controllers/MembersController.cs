@@ -264,13 +264,12 @@ public class MembersController : ControllerBase
     }
 
     [HttpPut("ChangeMemberLevel")]
-    public ActionResult ChangeMemberLevel([FromBody]List<Members> dataList)
+    public ActionResult ChangeMemberLevel([FromBody]Members data)
     {
-        foreach (var data in dataList)
-        {
+
             data.update_id = _getLoginClaimService.GetMembers_id();
             _membersSerivce.ChangeMemberLevel(data);
-        }
+
         return Ok();
     }
 
@@ -279,5 +278,12 @@ public class MembersController : ControllerBase
     {
         Members Data = _membersSerivce.GetOneDataMemberLevel(Id);
         return Ok(Data);
+    }
+
+    [HttpPut("DeleteMember")]
+    public ActionResult DeleteMember([FromQuery] Guid Id)
+    {
+        _membersSerivce.DeleteMember(Id);
+        return Ok();
     }
 }
