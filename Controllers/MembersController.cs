@@ -279,4 +279,11 @@ public class MembersController : ControllerBase
         Members Data = _membersSerivce.GetOneDataMemberLevel(Id);
         return Ok(Data);
     }
+
+    [HttpPut("DeleteMember")]
+    public ActionResult DeleteMember([FromQuery] Guid Id)
+    {
+        _membersSerivce.DeleteMember(Id);
+        return Ok();
+    }
 }
