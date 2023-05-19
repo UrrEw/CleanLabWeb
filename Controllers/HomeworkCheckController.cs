@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using LabWeb.Service;
 using LabWeb.models;
 
@@ -172,51 +173,21 @@ namespace LabWeb.Controllers
         #endregion
 
 
-
-        [HttpGet("DownloadFile")]
-        public async Task<IActionResult> DownloadFile(string fileName)
+        #region 下載檔案
+       [HttpGet("DownloadFile")]
+        public async Task<IActionResult> DownloadFile([FromQuery]string filename)
         {
-            string filePath = Path.Combine(_env.ContentRootPath, "Files", fileName);
-
-            if (!System.IO.File.Exists(filePath))
+            var filepath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/File", filename);
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filepath, out var contentType))
             {
-                return NotFound();
+                contentType = "application/octet-stream";
             }
 
-            var memory = new MemoryStream();
-            using (var stream = new FileStream(filePath, FileMode.Open))
-            {
-                await stream.CopyToAsync(memory);
-            }
-            memory.Position = 0;
-
-            return File(memory, GetContentType(filePath), Path.GetFileName(filePath));
+            var bytes = await System.IO.File.ReadAllBytesAsync(filepath);
+            return File(bytes, contentType, filename);
         }
-
-        private string GetContentType(string path)
-        {
-            var types = GetMimeTypes();
-            var ext = Path.GetExtension(path).ToLowerInvariant();
-            return types[ext];
-        }
-
-        private Dictionary<string, string> GetMimeTypes()
-        {
-            return new Dictionary<string, string>
-            {
-                {".txt", "text/plain"},
-                {".pdf", "application/pdf"},
-                {".doc", "application/vnd.ms-word"},
-                {".docx", "application/vnd.ms-word"},
-                {".xls", "application/vnd.ms-excel"},
-                {".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
-                {".png", "image/png"},
-                {".jpg", "image/jpeg"},
-                {".jpeg", "image/jpeg"},
-                {".gif", "image/gif"},
-                {".csv", "text/csv"}
-            };
-        }
+        #endregion
 
    }
 }
