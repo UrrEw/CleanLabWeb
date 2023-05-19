@@ -20,5 +20,9 @@ namespace LabWeb.ViewModel
         public TimeSpan reservetime {get;set;}
         
         public bool is_success {get;set;}
+
+        public bool is_fail {get;set;}
+
+
     }
 }
