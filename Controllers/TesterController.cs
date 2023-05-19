@@ -27,7 +27,7 @@ namespace LabWeb.Controllers
             return Ok(Data);
         }
 
-        [HttpPost("create")]
+        [HttpPost("CreateData")]
         public IActionResult CreateTester([FromBody]Tester Data)
         {
             try
@@ -43,7 +43,7 @@ namespace LabWeb.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("ReadOneData")]
         public IActionResult ReadTester(Guid Id)
         {
             try
@@ -63,8 +63,8 @@ namespace LabWeb.Controllers
             }
         }
 
-        [HttpPut("{id:guid}")]
-        public IActionResult UpdateTester(Guid Id,Tester updateData)
+        [HttpPut("UpdateData")]
+        public IActionResult UpdateTester([FromQuery]Guid Id,[FromBody]Tester updateData)
         {
             var data = _testerService.GetDataById(Id);
 
@@ -80,8 +80,8 @@ namespace LabWeb.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id:guid}")]
-        public IActionResult DeleteTester(Guid id)
+        [HttpDelete("DeleteData")]
+        public IActionResult DeleteTester([FromQuery]Guid id)
         {
             _testerService.SoftDeleteTesterById(id);
             return Ok();

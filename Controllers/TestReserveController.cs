@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using LabWeb.Service;
 using LabWeb.models;
 using LabWeb.ViewModel;
+using LabWeb.Secruity;
 
 namespace LabWeb.Controllers
 {
@@ -18,15 +19,17 @@ namespace LabWeb.Controllers
         private readonly TesterService _testerService;
         private readonly TestReserveService _testReserveService;
         private readonly GetLoginClaimService _getLoginClaimService;
+        private readonly JwtService _jwtService;
         
         public TestReserveController(ProctorService proctorService,ReserveTimeService reserveTimeService,
-                                    TesterService testerService,TestReserveService testReserveService,GetLoginClaimService getLoginClaimService)
+                                    TesterService testerService,TestReserveService testReserveService,GetLoginClaimService getLoginClaimService,JwtService jwtService)
         {
             _proctorService = proctorService;
             _reserveTimeService = reserveTimeService;
             _testerService = testerService;
             _testReserveService = testReserveService;
             _getLoginClaimService = getLoginClaimService;
+            _jwtService = jwtService;
         }
 
         [HttpGet("GetAllDataList")]
@@ -48,7 +51,8 @@ namespace LabWeb.Controllers
                     proctor_name = combinedData.Proctor.name,
                     reservedate = combinedData.ReserveTime.reservedate,
                     reservetime = combinedData.ReserveTime.reservetime,
-                    is_success = combinedData.Tester.is_success
+                    is_success = combinedData.Tester.is_success,
+                    is_fail = combinedData.Tester.is_pass
                 };
                 DataList.Add(Data);
             }       
@@ -150,14 +154,23 @@ namespace LabWeb.Controllers
             catch(Exception e)
             {
                 
-                return StatusCode(55688, e.Message);
+                return StatusCode(555, e.Message);
             }
 
             return Ok();
         }
 
-        [HttpPut("UpdateTester")]
-        public IActionResult UpdateTesterReserveStatus([FromQuery]Guid Id,[FromBody]TestReserveViewModel updateData)
+        [HttpDelete("DeleteData")]
+        public IActionResult DeleteTesterReserve([FromBody]TestReserveForReadID DeleteID)
+        {
+            _proctorService.SoftDeleteProctorById(DeleteID.proctor_id);
+            _reserveTimeService.SoftDeleteReserveTimeById(DeleteID.reservetime_id);
+            _testerService.SoftDeleteTesterById(DeleteID.tester_id);
+            return Ok();
+        }
+
+        [HttpPut("TesterSuccessReserve")]
+        public IActionResult TesterSuccessReserve([FromQuery]Guid Id,[FromBody]TestReserveViewModel updateData)
         {
             var data = _testerService.GetDataById(Id);
 
@@ -172,12 +185,19 @@ namespace LabWeb.Controllers
             return Ok();
         }
 
-        [HttpDelete("DeleteData")]
-        public IActionResult DeleteTesterReserve([FromBody]TestReserveForReadID DeleteID)
+        [HttpPut("TesterFailReserve")]
+        public IActionResult TesterFailReserve([FromQuery]Guid Id,[FromBody]TestReserveViewModel updateData)
         {
-            _proctorService.SoftDeleteProctorById(DeleteID.proctor_id);
-            _reserveTimeService.SoftDeleteReserveTimeById(DeleteID.reservetime_id);
-            _testerService.SoftDeleteTesterById(DeleteID.tester_id);
+            var data = _testerService.GetDataById(Id);
+
+            if (data == null)
+            {
+                return BadRequest();
+            }
+            data.tester_id = Id;
+            data.is_pass = updateData.is_fail;
+            _testerService.UpdateTesterFail(data);
+
             return Ok();
         }
     }

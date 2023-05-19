@@ -547,7 +547,7 @@ namespace LabWeb.Service
         public List<Members> GetDataMemberLevelList()
         {
             
-            string sql = $@"SELECT members_id,name,level FROM MEMBERS WHERE authcode = ''; ";
+            string sql = $@"SELECT members_id,name,level,entry_year FROM MEMBERS WHERE authcode = ''; ";
             var DataList = new List<Members>();
             try
             {
@@ -564,6 +564,7 @@ namespace LabWeb.Service
                     Data.members_id = (Guid)dr["members_id"];
                     Data.name = dr["name"].ToString();
                     Data.level = Convert.ToInt32(dr["level"]);
+                    Data.entry_year = Convert.ToInt32(dr["entry_year"]);
                     Data.Role = GetMemberLevel(Data.level);
                     DataList.Add(Data);
                 }
@@ -579,20 +580,53 @@ namespace LabWeb.Service
             return DataList;
         }
 
+        public Members GetOneDataMemberLevel(Guid Id)
+        {
+            
+            string sql = $@"SELECT name,level,entry_year FROM MEMBERS WHERE authcode = '' AND members_id = @Id; ";
+            var Data = new Members();
+            try
+            {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Id", Id);
+                SqlDataReader dr = cmd.ExecuteReader();
+                dr.Read();
+                Data.name = dr["name"].ToString();
+                Data.level = Convert.ToInt32(dr["level"]);
+                Data.entry_year = Convert.ToInt32(dr["entry_year"]);
+                Data.Role = GetMemberLevel(Data.level);
+                
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return Data;
+        }
+
         public string GetMemberLevel(int level)
         {
             var Role = string.Empty;
             if (level == 2)
             {
-                Role = "Senior";
+                Role = "學生";
             }
             if (level == 1)
             {
-                Role = "Senior";
+                Role = "學長姐";
             }
             if (level == 0)
             {
-                Role = "Admin";
+                Role = "管理員";
             }
             return Role;
         }

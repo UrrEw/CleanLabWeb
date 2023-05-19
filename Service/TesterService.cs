@@ -46,6 +46,7 @@ namespace LabWeb.Service
                     Data.reservetime = rt.TimeOfDay;
                     Data.is_success = Convert.ToBoolean(dr["is_success"]);
                     Data.is_pass = Convert.ToBoolean(dr["is_pass"]);
+                    Data.is_delete = Convert.ToBoolean(dr["is_delete"]);
                     DataList.Add(Data);
                 }
             }
@@ -175,6 +176,37 @@ namespace LabWeb.Service
             }
         }
 
+        public void UpdateTesterFail(Tester updateData)
+        {
+            string sql = $@"UPDATE Tester 
+                            SET 
+                            is_pass = @is_pass,
+                            update_time = @update_time,update_id = @update_id 
+                            WHERE 
+                            tester_id = @Id;";
+            try
+            {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql,conn);
+                cmd.Parameters.AddWithValue("@Id", updateData.tester_id);
+                cmd.Parameters.AddWithValue("@is_pass", updateData.is_pass);
+                cmd.Parameters.AddWithValue("@update_time", DateTime.Now);
+                cmd.Parameters.AddWithValue("@update_id", updateData.update_id);
+                cmd.ExecuteNonQuery();
+            }
+            catch(Exception e)
+            {
+                throw new Exception(e.Message.ToString());
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
         public void SoftDeleteTesterById(Guid id)
         {
             string sql = $@"UPDATE Tester SET is_delete = 1 WHERE tester_id = @Id;";
