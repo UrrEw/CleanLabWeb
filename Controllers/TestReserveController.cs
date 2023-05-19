@@ -196,7 +196,7 @@ namespace LabWeb.Controllers
             }
             data.tester_id = Id;
             data.is_pass = updateData.is_fail;
-            _testerService.UpdateTester(data);
+            _testerService.UpdateTesterFail(data);
 
             return Ok();
         }
