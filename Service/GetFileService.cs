@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using LabWeb.models;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
+using Microsoft.AspNetCore.StaticFiles;
 
 
 namespace LabWeb.Service
@@ -54,6 +55,24 @@ namespace LabWeb.Service
                     System.IO.File.Delete(oldFilePath);
                 }
             }
+        }
+
+        public async Task<FileDownload> FileDownload(string filename)
+        {
+            var filepath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/File", filename);
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filepath, out var contentType))
+            {
+                contentType = "application/octet-stream";
+            }
+
+            var bytes = await System.IO.File.ReadAllBytesAsync(filepath);
+            return new FileDownload
+            {
+                Bytes = bytes,
+                ContentType = contentType,
+                Filename = filename
+            };
         }
     }
 }

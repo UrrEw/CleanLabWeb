@@ -165,7 +165,6 @@ namespace LabWeb.Controllers
             {
                 return NotFound();
             }
-
             ChangeData.homeworkcheck_id = Id;
             _homeworkCheckService.ChangeStatus(ChangeData);
 
@@ -178,15 +177,8 @@ namespace LabWeb.Controllers
        [HttpGet("DownloadFile")]
         public async Task<IActionResult> DownloadFile([FromQuery]string filename)
         {
-            var filepath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/File", filename);
-            var provider = new FileExtensionContentTypeProvider();
-            if (!provider.TryGetContentType(filepath, out var contentType))
-            {
-                contentType = "application/octet-stream";
-            }
-
-            var bytes = await System.IO.File.ReadAllBytesAsync(filepath);
-            return File(bytes, contentType, filename);
+           var FileContent = await _getFileService.FileDownload(filename);
+            return File(FileContent.Bytes, FileContent.ContentType, FileContent.Filename);
         }
         #endregion
 
