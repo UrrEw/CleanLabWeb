@@ -127,6 +127,39 @@ namespace LabWeb.Service
             }
             return Data;
         }
+
+         public Members GetDataByAccountButNoAuthcode(string Account)
+        {
+            Members Data = new Members();
+            string sql = $@"SELECT * FROM Members WHERE account='{Account}'; ";
+            try
+            {
+                 if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                SqlDataReader dr = cmd.ExecuteReader();
+                dr.Read();
+                Data.members_id = (Guid)dr["members_id"];
+                Data.account = dr["account"].ToString();
+                Data.password = dr["password"].ToString();
+                Data.name = dr["name"].ToString();
+                Data.authcode = dr["authcode"].ToString();
+                Data.email = dr["email"].ToString();
+                Data.level = Convert.ToInt32(dr["level"]);
+            }
+            catch(Exception)
+            {
+                Data = null;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return Data;
+        }
         #endregion
 
         #region 帳號註冊重複確認
@@ -150,7 +183,7 @@ namespace LabWeb.Service
         #region 信箱驗證
         public string EmailValidate(string Account,string AuthCode)
         {
-            Members ValidateMember = GetDataByAccount(Account);
+            Members ValidateMember = GetDataByAccountButNoAuthcode(Account);
             string ValidateStr = string.Empty;
             if (ValidateMember != null)
             {
