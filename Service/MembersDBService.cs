@@ -719,5 +719,40 @@ namespace LabWeb.Service
                 conn.Close();
             }
         }
+
+        public Members GetDataByMembersID(Guid Id)
+        {
+            Members Data = new Members();
+            string sql = $@"SELECT * FROM Members WHERE members_id = @Id AND authcode = ''; ";
+            try
+            {
+                 if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Id", Id);
+                SqlDataReader dr = cmd.ExecuteReader();
+                dr.Read();
+                Data.members_id = (Guid)dr["members_id"];
+                Data.account = dr["account"].ToString();
+                Data.password = dr["password"].ToString();
+                Data.name = dr["name"].ToString();
+                Data.authcode = dr["authcode"].ToString();
+                Data.email = dr["email"].ToString();
+                Data.level = Convert.ToInt32(dr["level"]);
+                Data.entry_year = Convert.ToInt32(dr["entry_year"]);
+            }
+            catch(Exception)
+            {
+                Data = null;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return Data;
+        }
     }
 }

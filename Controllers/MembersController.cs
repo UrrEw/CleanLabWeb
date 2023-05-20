@@ -221,25 +221,12 @@ public class MembersController : ControllerBase
     }
 
     [HttpGet("GetLoginInfo")]
-    public ActionResult GetLoginInfo([FromBody]tokenmodel token)
+    public ActionResult GetLoginInfo()
     {
-        string Token = token.Token;
-        var account = _jwtService.DecodeToken(Token);
-        if (string.IsNullOrEmpty(account))
-            {
-                // JWT 解碼失敗，返回錯誤訊息
-                return BadRequest("Invalid token");
-            }
+        var loginID = _getLoginClaimService.GetMembers_id();
+        var Data = _membersSerivce.GetDataByMembersID(loginID);
 
-            var loginInfo = _membersSerivce.GetDataByAccount(account);
-        if (loginInfo == null)
-        {
-            // 找不到登入者的資料，返回錯誤訊息或其他處理邏輯
-            return NotFound("Login info not found");
-        }
-
-        // 根據需要進行後續處理，例如回傳登入者的資料
-        return Ok(new { members_Id = loginInfo.members_id, name = loginInfo.name });
+        return Ok(Data);
     }
 
     [HttpGet("GetSuccessReserve")]
