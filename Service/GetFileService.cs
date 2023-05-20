@@ -18,7 +18,13 @@ namespace LabWeb.Service
             {
                 if(!FormFile.ContentType.StartsWith("application/"))
                 {
-                    return "檔案格式錯誤";
+                    throw new FormatException("檔案格式不正確");
+                }
+
+                var maxFileSizeInBytes = 100 * 1024 * 1024; 
+                if (FormFile.Length > maxFileSizeInBytes)
+                {
+                    throw new InvalidOperationException("檔案大小超過限制");
                 }
 
                 string uniqueFileName = FormFile.FileName;
