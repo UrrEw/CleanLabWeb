@@ -27,12 +27,10 @@ namespace LabWeb.Controllers
         }
 
         [HttpGet("GetAllDataList")]
-        public IActionResult GetAllData([FromBody]tokenmodel token)
+        public IActionResult GetAllData()
         {
-            string Token = token.Token;
-            var account = _jwtService.DecodeToken(Token);
-            var members = _membersDBService.GetDataByAccount(account);
-            var Data = _testService.GetAllData(members.members_id);
+            var members_id = _getLoginClaimService.GetMembers_id();
+            var Data = _testService.GetAllData(members_id);
             return Ok(Data);
         }
 
