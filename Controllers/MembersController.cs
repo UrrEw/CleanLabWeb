@@ -113,6 +113,8 @@ public class MembersController : ControllerBase
             string cookieName = _config["AppSettings:cookieName"].ToString();
             string account = Data.Account;
             string name = Validate;
+            var LoginData = _membersSerivce.GetDataByAccount(Data.Account);
+            int level = LoginData.level;
 
             var cookieOptions=new CookieOptions
             {
@@ -121,7 +123,7 @@ public class MembersController : ControllerBase
             };
             
             Response.Cookies.Append(cookieName,token,cookieOptions);
-            return Ok(new{token,account,name});
+            return Ok(new{token,account,name,level});
         }
         else 
         {
