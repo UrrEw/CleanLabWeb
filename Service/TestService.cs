@@ -44,6 +44,7 @@ namespace LabWeb.Service
                     Data.test_content = dr["test_content"].ToString();
                     Data.start_date = ((DateTime)dr["start_date"]).Date;
                     Data.end_date = ((DateTime)dr["end_date"]).Date;
+                    Data.create_id = (Guid)dr["create_id"];
                     if (dr["is_success"] != DBNull.Value)
                     {
                         Data.is_success = Convert.ToBoolean(dr["is_success"]);

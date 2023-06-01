@@ -30,8 +30,10 @@ namespace LabWeb.Controllers
         public IActionResult GetAllData()
         {
             var members_id = _getLoginClaimService.GetMembers_id();
+            var memberData = _membersDBService.GetDataByMembersID(members_id);
+            string name = memberData.name;
             var Data = _testService.GetAllData(members_id);
-            return Ok(Data);
+            return Ok(new{Data,name});
         }
 
         [HttpPost("CreateData")]
