@@ -37,5 +37,7 @@ namespace LabWeb.models
         public string? Status {get;set;}
 
         public bool is_success {get;set;}
+
+        public string? name {get;set;}
     }
 }

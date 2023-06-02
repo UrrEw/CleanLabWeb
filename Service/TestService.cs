@@ -21,8 +21,9 @@ namespace LabWeb.Service
 
         public IEnumerable<Test> GetAllData(Guid Id)
         {
-            string sql = $@"SELECT m.*,t.is_success FROM Test m 
+            string sql = $@"SELECT m.*,t.is_success,d.name FROM Test m 
                             LEFT JOIN Tester t ON m.test_id = t.test_id AND t.members_id = @Id
+                            INNER JOIN Members d ON d.members_id = @Id
                             WHERE m.is_delete = 0 ORDER BY end_date;";
             var DataList = new List<Test>();
 
@@ -62,7 +63,7 @@ namespace LabWeb.Service
                         Data.is_success = false;
                         Data.Status = "尚未預約";
                     }
-
+                    Data.name = dr["name"].ToString();
                     
                     DataList.Add(Data);
                 }
