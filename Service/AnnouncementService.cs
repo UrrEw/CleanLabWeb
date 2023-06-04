@@ -5,33 +5,46 @@ using System.Threading.Tasks;
 using LabWeb.models;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using LabWeb.Service;
 
 namespace LabWeb.Service
 {
     public class AnnouncementService
     {
         private readonly SqlConnection conn;
+        private readonly PagingService _PagingService;
 
-        public AnnouncementService(SqlConnection connection)
+        public AnnouncementService(SqlConnection connection,PagingService PagingService)
         {
             conn = connection;
+            _PagingService = PagingService;
         }
         
-        public IEnumerable<Announcement> GetAllData()
+       public IEnumerable<Announcement> GetAllData(PagingService paging)
         {
-            string sql = $@"SELECT * FROM Announcement WHERE is_delete = 0;";
             var DataList = new List<Announcement>();
-
             try
             {
-                if (conn.State != ConnectionState.Closed)
-                {
-                    conn.Close();
-                }
                 conn.Open();
-                SqlCommand cmd = new SqlCommand(sql,conn);
+
+                string countSql = "SELECT COUNT(*) FROM Announcement WHERE is_delete = 0;";
+                SqlCommand countCmd = new SqlCommand(countSql, conn);
+                int totalRecords = (int)countCmd.ExecuteScalar();
+
+                _PagingService.MaxPage = (int)Math.Ceiling((double)totalRecords / _PagingService.ItemNum);
+                _PagingService.SetRightPage();
+
+                string sql = $@"SELECT * FROM (
+                                    SELECT row_number() OVER (ORDER BY create_id DESC) AS sort, *
+                                    FROM Announcement
+                                    WHERE is_delete = 0
+                                ) AS SubQuery
+                                WHERE sort BETWEEN {(_PagingService.NowPage - 1) * _PagingService.ItemNum + 1} AND {_PagingService.NowPage * _PagingService.ItemNum};";
+
+                SqlCommand cmd = new SqlCommand(sql, conn);
                 SqlDataReader dr = cmd.ExecuteReader();
-                while(dr.Read())
+
+                while (dr.Read())
                 {
                     Announcement Data = new Announcement();
                     Data.announce_id = (Guid)dr["announce_id"];
@@ -41,6 +54,8 @@ namespace LabWeb.Service
                     Data.update_time = DateTime.Parse(dr["update_time"].ToString());
                     DataList.Add(Data);
                 }
+
+                dr.Close();
             }
             catch (Exception e)
             {
@@ -53,6 +68,8 @@ namespace LabWeb.Service
 
             return DataList;
         }
+
+
 
         public void InsertAnnouncement(Announcement newData)
         {
