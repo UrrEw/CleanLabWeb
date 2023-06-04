@@ -138,7 +138,7 @@ namespace LabWeb.Service
         {
             string sql = $@"UPDATE ReserveTime 
                             SET 
-                            reservedate = @reservedate,reservetime = @reservetime,proctor_id = @proctor_id,
+                            reservedate = @reservedate,reservetime = @reservetime,
                             update_time = @update_time,update_id = @update_id 
                             WHERE 
                             reservetime_id = @Id;";
@@ -151,7 +151,6 @@ namespace LabWeb.Service
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
                 cmd.Parameters.AddWithValue("@Id", updateData.reservetime_id);
-                cmd.Parameters.AddWithValue("@proctor_id", updateData.proctor_id);
                 cmd.Parameters.AddWithValue("@reservedate", updateData.reservedate);
                 cmd.Parameters.AddWithValue("@reservetime", updateData.reservetime);
                 cmd.Parameters.AddWithValue("@update_time", DateTime.Now);

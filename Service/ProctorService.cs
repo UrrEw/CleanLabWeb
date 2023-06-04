@@ -42,6 +42,8 @@ namespace LabWeb.Service
                     Data.members_id = (Guid)dr["members_id"];
                     Data.name = dr["name"].ToString();
                     Data.test_title = dr["test_title"].ToString();
+                    Data.create_id = (Guid)dr["create_id"];
+                    Data.update_id = (Guid)dr["update_id"];
                     DataList.Add(Data);
                 }
             }
@@ -121,6 +123,8 @@ namespace LabWeb.Service
                 Data.members_id = (Guid)dr["members_id"];
                 Data.test_title = dr["test_title"].ToString();
                 Data.name = dr["name"].ToString();
+                Data.create_id = (Guid)dr["create_id"];
+                Data.update_id = (Guid)dr["update_id"];
             }
             catch(Exception e)
             {
@@ -138,7 +142,7 @@ namespace LabWeb.Service
         {
             string sql = $@"UPDATE Proctor 
                             SET 
-                            test_id = @test_id,
+                            test_id = @test_id,members_id = @members_id,
                             update_time = @update_time,update_id = @update_id 
                             WHERE 
                             proctor_id = @Id;";
@@ -152,6 +156,7 @@ namespace LabWeb.Service
                 SqlCommand cmd = new SqlCommand(sql,conn);
                 cmd.Parameters.AddWithValue("@Id", updateData.proctor_id);
                 cmd.Parameters.AddWithValue("@test_id", updateData.test_id);
+                cmd.Parameters.AddWithValue("@members_id", updateData.members_id);
                 cmd.Parameters.AddWithValue("@update_time", DateTime.Now);
                 cmd.Parameters.AddWithValue("@update_id", updateData.update_id);
                 cmd.ExecuteNonQuery();

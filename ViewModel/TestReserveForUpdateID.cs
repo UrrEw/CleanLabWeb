@@ -10,7 +10,7 @@ namespace LabWeb.ViewModel
         public Guid Oldproctor_id {get;set;}
         public Guid Oldreservetime_id {get;set;}
 
-        public Guid Newproctor_id {get;set;}
+        public Guid Newmember_id {get;set;}
         public Guid Newtest_id {get;set;}
         public Guid Newreservetime_id {get;set;}
 

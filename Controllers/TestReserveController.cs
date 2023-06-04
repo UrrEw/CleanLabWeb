@@ -57,7 +57,9 @@ namespace LabWeb.Controllers
                     is_fail = combinedData.Tester.is_pass,
                     tester_id = combinedData.Tester.tester_id,
                     members_id = combinedData.Tester.members_id,
-                    reservetime_id = combinedData.ReserveTime.reservetime_id
+                    reservetime_id = combinedData.ReserveTime.reservetime_id,
+                    create_id = combinedData.Proctor.create_id,
+                    update_id = combinedData.Proctor.update_id
                 };
                 DataList.Add(Data);
             }       
@@ -114,6 +116,13 @@ namespace LabWeb.Controllers
                 reserveTime = _reserveTimeService.GetDataById(ReadID.reservetime_id);
                 tester = _testerService.GetDataById(ReadID.tester_id);
 
+                Data.proctor_id = ReadID.proctor_id;
+                Data.reservetime_id = ReadID.reservetime_id;
+                Data.tester_id = ReadID.tester_id;
+                Data.test_id = proctor.test_id;
+                Data.create_id = proctor.create_id;
+                Data.update_id = proctor.update_id;
+                Data.members_id = proctor.members_id;
                 Data.proctor_name = proctor.name;
                 Data.test_title = proctor.test_title;
                 Data.reservedate = reserveTime.reservedate;
@@ -144,17 +153,14 @@ namespace LabWeb.Controllers
                 proctor = _proctorService.GetDataById(updateData.Oldproctor_id);
                 reserveTime = _reserveTimeService.GetDataById(updateData.Oldreservetime_id);
 
-                proctor.proctor_id = updateData.Newproctor_id;
+                proctor.members_id = updateData.Newmember_id;
                 proctor.test_id = updateData.Newtest_id;
                 proctor.update_id = _getLoginClaimService.GetMembers_id();
-
-                reserveTime.reservetime_id = updateData.Newreservetime_id;
-                reserveTime.proctor_id = updateData.Newproctor_id;
+                _proctorService.UpdateProctor(proctor);
+                
                 reserveTime.reservedate = updateData.reservedate;
                 reserveTime.reservetime = updateData.reservetime;
                 reserveTime.update_id = _getLoginClaimService.GetMembers_id();
-
-                _proctorService.UpdateProctor(proctor);
                 _reserveTimeService.UpdateReserveTime(reserveTime);
             }
             catch(Exception e)
