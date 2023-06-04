@@ -115,6 +115,7 @@ public class MembersController : ControllerBase
             string name = Validate;
             var LoginData = _membersSerivce.GetDataByAccount(Data.Account);
             int level = LoginData.level;
+            var is_delete = LoginData.is_delete;
 
             var cookieOptions=new CookieOptions
             {
@@ -123,7 +124,7 @@ public class MembersController : ControllerBase
             };
             
             Response.Cookies.Append(cookieName,token,cookieOptions);
-            return Ok(new{token,account,name,level});
+            return Ok(new{token,account,name,level,is_delete});
         }
         else 
         {
