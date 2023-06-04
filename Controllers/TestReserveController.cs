@@ -84,10 +84,11 @@ namespace LabWeb.Controllers
                 reserveTime.update_id = _getLoginClaimService.GetMembers_id();
                 _reserveTimeService.InsertReserveTime(reserveTime);
 
-                tester.members_id = Data.create_id;
+                tester.members_id = _getLoginClaimService.GetMembers_id();;
                 tester.reservetime_id = reserveTime.reservetime_id;
                 tester.create_id = _getLoginClaimService.GetMembers_id();
                 tester.update_id = _getLoginClaimService.GetMembers_id();
+                tester.test_id = Data.test_id;
                 _testerService.InsertTester(tester);
 
                 return Ok();
