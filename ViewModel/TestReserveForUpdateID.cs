@@ -11,7 +11,6 @@ namespace LabWeb.ViewModel
         public Guid Oldreservetime_id {get;set;}
 
         public Guid Newmember_id {get;set;}
-        public Guid Newtest_id {get;set;}
         public Guid Newreservetime_id {get;set;}
 
         public DateTime reservedate {get;set;}

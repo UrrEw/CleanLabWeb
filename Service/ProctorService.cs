@@ -142,7 +142,7 @@ namespace LabWeb.Service
         {
             string sql = $@"UPDATE Proctor 
                             SET 
-                            test_id = @test_id,members_id = @members_id,
+                            members_id = @members_id,
                             update_time = @update_time,update_id = @update_id 
                             WHERE 
                             proctor_id = @Id;";
@@ -155,7 +155,6 @@ namespace LabWeb.Service
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql,conn);
                 cmd.Parameters.AddWithValue("@Id", updateData.proctor_id);
-                cmd.Parameters.AddWithValue("@test_id", updateData.test_id);
                 cmd.Parameters.AddWithValue("@members_id", updateData.members_id);
                 cmd.Parameters.AddWithValue("@update_time", DateTime.Now);
                 cmd.Parameters.AddWithValue("@update_id", updateData.update_id);

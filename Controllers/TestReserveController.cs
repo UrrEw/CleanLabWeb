@@ -165,7 +165,6 @@ namespace LabWeb.Controllers
                 proctor = _proctorService.GetDataById(reserveTime.proctor_id);
 
                 proctor.members_id = updateData.Newmember_id;
-                proctor.test_id = updateData.Newtest_id;
                 proctor.update_id = _getLoginClaimService.GetMembers_id();
                 _proctorService.UpdateProctor(proctor);
                 

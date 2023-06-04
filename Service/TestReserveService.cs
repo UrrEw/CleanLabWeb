@@ -96,7 +96,8 @@ namespace LabWeb.Service
                             INNER JOIN Tester t ON t.reservetime_id = r.reservetime_id
                             INNER JOIN Members mp ON mp.members_id = p.members_id
                             INNER JOIN Members mt ON mt.members_id = t.members_id
-                            WHERE p.is_delete=0 AND d.is_delete=0 ORDER BY r.reservedate,r.reservetime ;";
+                            WHERE p.is_delete=0 AND t.is_delete=0 AND r.is_delete=0
+                            ORDER BY r.reservedate,r.reservetime ;";
             List<TestReserveViewModel> DataList = new List<TestReserveViewModel>();
 
             try
