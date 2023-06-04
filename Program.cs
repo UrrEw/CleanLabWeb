@@ -83,6 +83,7 @@ builder.Services.AddSingleton<CheckMemberService>();
 builder.Services.AddSingleton<HomeworkCheckService>();
 builder.Services.AddSingleton<GetFileService>();
 builder.Services.AddSingleton<SeniorProject_MemberService>();
+builder.Services.AddSingleton<PagingService>();
 
 var app = builder.Build();
 

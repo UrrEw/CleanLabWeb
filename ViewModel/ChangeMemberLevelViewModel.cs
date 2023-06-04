@@ -9,7 +9,6 @@ namespace LabWeb.ViewModel
     {
         public Guid members_id {get;set;}
         public int? level {get;set;}
-
         public Guid update_id   {get;set;}
     }
 }

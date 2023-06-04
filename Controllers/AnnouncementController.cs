@@ -15,18 +15,25 @@ namespace LabWeb.Controllers
     {
         private readonly AnnouncementService _announcementService;
         private readonly GetLoginClaimService _getLoginClaimService;
-        public AnnouncementController(AnnouncementService announcementService,GetLoginClaimService getLoginClaimService)
+        private readonly PagingService _PagingService;
+        public AnnouncementController(AnnouncementService announcementService,GetLoginClaimService getLoginClaimService, PagingService PagingService)
         {
             _announcementService = announcementService;
             _getLoginClaimService = getLoginClaimService;
+            _PagingService = PagingService;
         }
 
-        [HttpGet("GetAllDataList")]
-        public IActionResult GetAllData()
+      [HttpGet("GetAllDataList")]
+        public IActionResult GetAllData(int page = 1)
         {
-            var Data = _announcementService.GetAllData();
-            return Ok(Data);
+            _PagingService.NowPage = page;
+            var data = _announcementService.GetAllData(_PagingService);
+            
+            return Ok(data);
         }
+
+
+
 
         [HttpPost("CreateData")]
         public IActionResult CreateAnnouncement([FromBody]Announcement Data)
