@@ -21,9 +21,10 @@ namespace LabWeb.Service
 
         public IEnumerable<Test> GetAllData(Guid Id)
         {
-            string sql = $@"SELECT m.*,t.is_success FROM Test m 
+            string sql = $@"SELECT DISTINCT m.*,t.is_success,d.name FROM Test m 
                             LEFT JOIN Tester t ON m.test_id = t.test_id AND t.members_id = @Id
-                            WHERE m.is_delete = 0 ORDER BY end_date;";
+                            INNER JOIN Members d ON d.members_id = m.create_id
+                            WHERE m.is_delete = 0 OR t.is_delete = 0 ORDER BY end_date;";
             var DataList = new List<Test>();
 
             try
@@ -44,6 +45,7 @@ namespace LabWeb.Service
                     Data.test_content = dr["test_content"].ToString();
                     Data.start_date = ((DateTime)dr["start_date"]).Date;
                     Data.end_date = ((DateTime)dr["end_date"]).Date;
+                    Data.create_id = (Guid)dr["create_id"];
                     if (dr["is_success"] != DBNull.Value)
                     {
                         Data.is_success = Convert.ToBoolean(dr["is_success"]);
@@ -61,7 +63,7 @@ namespace LabWeb.Service
                         Data.is_success = false;
                         Data.Status = "尚未預約";
                     }
-
+                    Data.name = dr["name"].ToString();
                     
                     DataList.Add(Data);
                 }

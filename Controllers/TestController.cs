@@ -31,6 +31,7 @@ namespace LabWeb.Controllers
         {
             var members_id = _getLoginClaimService.GetMembers_id();
             var Data = _testService.GetAllData(members_id);
+
             return Ok(Data);
         }
 
@@ -55,14 +56,14 @@ namespace LabWeb.Controllers
         {
             try
             {
-                Test Data = _testService.GetDataById(Id);
-
-                if(Data == null)
+                Test TestData = _testService.GetDataById(Id);
+                var MemberData = _membersDBService.GetDataButOnlyIdAndName();
+                if(TestData == null)
                 {
                     return BadRequest("NODATA");
                 }
 
-                return Ok(Data);
+                return Ok(new{TestData,MemberData});
             }
             catch(Exception e)
             {

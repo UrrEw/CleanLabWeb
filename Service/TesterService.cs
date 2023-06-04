@@ -66,10 +66,10 @@ namespace LabWeb.Service
         {
             string sql = $@"INSERT INTO Tester
                             (tester_id,reservetime_id,members_id,is_success,is_pass,
-                            create_time,create_id,update_time,update_id,is_delete) 
+                            create_time,create_id,update_time,update_id,is_delete,test_id) 
                             VALUES
                             (@tester_id,@reservetime_id, @members_id, 0,0,
-                            @create_time,@create_id, @update_time, @update_id, 0);";
+                            @create_time,@create_id, @update_time, @update_id, 0,@test_id);";
             
             try
             {
@@ -88,6 +88,7 @@ namespace LabWeb.Service
                 cmd.Parameters.AddWithValue("@create_id", newData.create_id);
                 cmd.Parameters.AddWithValue("@update_time", DateTime.Now);
                 cmd.Parameters.AddWithValue("@update_id", newData.update_id);
+                cmd.Parameters.AddWithValue("@test_id", newData.test_id);
 
                 cmd.ExecuteNonQuery();
             }

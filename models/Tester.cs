@@ -33,5 +33,7 @@ namespace LabWeb.models
         public Guid update_id {get;set;}
 
         public bool is_delete {get;set;}
+
+        public Guid test_id {get;set;}
     }
 }

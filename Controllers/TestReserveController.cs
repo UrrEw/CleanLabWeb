@@ -46,13 +46,18 @@ namespace LabWeb.Controllers
             {
                 var Data = new TestReserveViewModel()
                 {
+                    test_id = combinedData.Proctor.test_id,
                     test_title = combinedData.Proctor.test_title,
                     tester_name = combinedData.Tester.name,
+                    proctor_id = combinedData.Proctor.proctor_id,
                     proctor_name = combinedData.Proctor.name,
                     reservedate = combinedData.ReserveTime.reservedate,
                     reservetime = combinedData.ReserveTime.reservetime,
                     is_success = combinedData.Tester.is_success,
-                    is_fail = combinedData.Tester.is_pass
+                    is_fail = combinedData.Tester.is_pass,
+                    tester_id = combinedData.Tester.tester_id,
+                    members_id = combinedData.Tester.members_id,
+                    reservetime_id = combinedData.ReserveTime.reservetime_id
                 };
                 DataList.Add(Data);
             }       
@@ -74,17 +79,18 @@ namespace LabWeb.Controllers
                 proctor.update_id = _getLoginClaimService.GetMembers_id();
                 _proctorService.InsertProctor(proctor);
                 
-                reserveTime.proctor_id = Data.proctor_id;
+                reserveTime.proctor_id = proctor.proctor_id;
                 reserveTime.reservedate = Data.reservedate;
                 reserveTime.reservetime = Data.reservetime;
                 reserveTime.create_id = _getLoginClaimService.GetMembers_id();
                 reserveTime.update_id = _getLoginClaimService.GetMembers_id();
                 _reserveTimeService.InsertReserveTime(reserveTime);
 
-                tester.members_id = Data.create_id;
+                tester.members_id = _getLoginClaimService.GetMembers_id();;
                 tester.reservetime_id = reserveTime.reservetime_id;
                 tester.create_id = _getLoginClaimService.GetMembers_id();
                 tester.update_id = _getLoginClaimService.GetMembers_id();
+                tester.test_id = Data.test_id;
                 _testerService.InsertTester(tester);
 
                 return Ok();
