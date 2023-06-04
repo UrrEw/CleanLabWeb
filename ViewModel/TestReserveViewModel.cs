@@ -23,6 +23,6 @@ namespace LabWeb.ViewModel
 
         public bool is_fail {get;set;}
 
-
+        public Guid tester_id {get;set;}
     }
 }

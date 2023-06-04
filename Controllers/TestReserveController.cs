@@ -55,7 +55,9 @@ namespace LabWeb.Controllers
                     reservetime = combinedData.ReserveTime.reservetime,
                     is_success = combinedData.Tester.is_success,
                     is_fail = combinedData.Tester.is_pass,
-                    members_id = combinedData.Tester.members_id
+                    tester_id = combinedData.Tester.tester_id,
+                    members_id = combinedData.Tester.members_id,
+                    reservetime_id = combinedData.ReserveTime.reservetime_id
                 };
                 DataList.Add(Data);
             }       
