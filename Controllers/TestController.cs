@@ -16,7 +16,6 @@ namespace LabWeb.Controllers
         private readonly TestService _testService;
         private readonly GetLoginClaimService _getLoginClaimService;
         private readonly JwtService _jwtService;
-
         private readonly MembersDBService _membersDBService;
         public TestController(TestService testService,GetLoginClaimService getLoginClaimService,JwtService jwtService,MembersDBService membersDBService)
         {
