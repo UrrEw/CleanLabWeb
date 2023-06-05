@@ -28,8 +28,9 @@ namespace LabWeb.Controllers
         {
             _PagingService.NowPage = page;
             var data = _announcementService.GetAllData(_PagingService);
+            var MaxPage =  _PagingService.MaxPage;
             
-            return Ok(data);
+            return Ok(new{data,MaxPage});
         }
 
 
