@@ -15,7 +15,7 @@ namespace LabWeb.Service
         {
             get
             {
-                return 3;
+                return 5;
             }
         }
 

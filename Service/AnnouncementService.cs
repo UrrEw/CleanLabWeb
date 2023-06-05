@@ -35,7 +35,7 @@ namespace LabWeb.Service
                 _PagingService.SetRightPage();
 
                 string sql = $@"SELECT * FROM (
-                                    SELECT row_number() OVER (ORDER BY create_id DESC) AS sort, *
+                                    SELECT row_number() OVER (ORDER BY create_time DESC) AS sort, *
                                     FROM Announcement
                                     WHERE is_delete = 0
                                 ) AS SubQuery
