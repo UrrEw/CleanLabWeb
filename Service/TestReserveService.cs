@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using LabWeb.models;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using LabWeb.ViewModel;
 
 namespace LabWeb.Service
 {
@@ -85,6 +86,60 @@ namespace LabWeb.Service
                 conn.Close();
             }
             return Data;
+        }
+
+        public List<TestReserveViewModel> GetAllTestReserveData()
+        {
+            string sql = $@"SELECT DISTINCT p.*,r.*,t.*,d.test_title,mp.name AS proctor_name, mt.name AS tester_name FROM Proctor p
+                            INNER JOIN Test d ON p.test_id = d.test_id
+                            INNER JOIN ReserveTime r ON p.proctor_id = r.proctor_id
+                            INNER JOIN Tester t ON t.reservetime_id = r.reservetime_id
+                            INNER JOIN Members mp ON mp.members_id = p.members_id
+                            INNER JOIN Members mt ON mt.members_id = t.members_id
+                            WHERE p.is_delete=0 AND t.is_delete=0 AND r.is_delete=0
+                            ORDER BY r.reservedate,r.reservetime ;";
+            List<TestReserveViewModel> DataList = new List<TestReserveViewModel>();
+
+            try
+            {
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql,conn);
+                SqlDataReader dr = cmd.ExecuteReader();
+                while(dr.Read())
+                {
+                    TestReserveViewModel Data = new TestReserveViewModel();
+                    Data.proctor_id = (Guid)dr["proctor_id"];
+                    Data.test_id = (Guid)dr["test_id"];
+                    Data.members_id = (Guid)dr["members_id"];
+                    Data.proctor_name = dr["proctor_name"].ToString();
+                    Data.tester_name = dr["tester_name"].ToString();
+                    Data.test_title = dr["test_title"].ToString();
+                    Data.create_id = (Guid)dr["create_id"];
+                    Data.update_id = (Guid)dr["update_id"];
+                    Data.reservetime_id = (Guid)dr["reservetime_id"];
+                    Data.reservedate = ((DateTime)dr["reservedate"]).Date;
+                    DateTime rt = (DateTime)dr["reservetime"];
+                    Data.reservetime = rt.TimeOfDay;
+                    Data.tester_id = (Guid)dr["tester_id"];
+                    Data.is_success = Convert.ToBoolean(dr["is_success"]);
+                    Data.is_fail = Convert.ToBoolean(dr["is_pass"]);
+                    Data.is_delete = Convert.ToBoolean(dr["is_delete"]);
+                    DataList.Add(Data);
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return DataList;
         }
     }
 }

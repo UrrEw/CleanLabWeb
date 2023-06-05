@@ -20,9 +20,10 @@ namespace LabWeb.Controllers
         private readonly TestReserveService _testReserveService;
         private readonly GetLoginClaimService _getLoginClaimService;
         private readonly JwtService _jwtService;
-        
+        private readonly MembersDBService _membersDBService;
         public TestReserveController(ProctorService proctorService,ReserveTimeService reserveTimeService,
-                                    TesterService testerService,TestReserveService testReserveService,GetLoginClaimService getLoginClaimService,JwtService jwtService)
+                                    TesterService testerService,TestReserveService testReserveService,GetLoginClaimService getLoginClaimService
+                                    ,JwtService jwtService,MembersDBService membersDBService)
         {
             _proctorService = proctorService;
             _reserveTimeService = reserveTimeService;
@@ -30,37 +31,52 @@ namespace LabWeb.Controllers
             _testReserveService = testReserveService;
             _getLoginClaimService = getLoginClaimService;
             _jwtService = jwtService;
+            _membersDBService = membersDBService;
         }
+
+        // [HttpGet("GetAllDataList")]
+        // public IActionResult GetAllData()
+        // {
+        //     var proctorData = _proctorService.GetAllData();
+        //     var reserveTimeData = _reserveTimeService.GetAllData();
+        //     var testerData = _testerService.GetAllData();
+        //     var DataList = new List<TestReserveViewModel>();
+
+        //     foreach(var combinedData in proctorData
+        //                 .Zip(reserveTimeData, (proctor, reserveTime) => new { Proctor = proctor, ReserveTime = reserveTime })
+        //                 .Zip(testerData, (combined, tester) => new { Proctor = combined.Proctor, ReserveTime = combined.ReserveTime, Tester = tester }))
+        //     {
+        //         var Data = new TestReserveViewModel()
+        //         {
+        //             test_id = combinedData.Proctor.test_id,
+        //             test_title = combinedData.Proctor.test_title,
+        //             tester_name = combinedData.Tester.name,
+        //             proctor_id = combinedData.Proctor.proctor_id,
+        //             proctor_name = combinedData.Proctor.name,
+        //             reservedate = combinedData.ReserveTime.reservedate,
+        //             reservetime = combinedData.ReserveTime.reservetime,
+        //             is_success = combinedData.Tester.is_success,
+        //             is_fail = combinedData.Tester.is_pass,
+        //             tester_id = combinedData.Tester.tester_id,
+        //             members_id = combinedData.Tester.members_id,
+        //             reservetime_id = combinedData.ReserveTime.reservetime_id,
+        //             create_id = combinedData.Proctor.create_id,
+        //             update_id = combinedData.Proctor.update_id
+        //         };
+        //         DataList.Add(Data);
+        //     }
+
+        //     DataList = DataList.OrderBy(data => data.reservedate).ToList();
+            
+        //     return Ok(DataList);
+        // }
 
         [HttpGet("GetAllDataList")]
         public IActionResult GetAllData()
         {
-            var proctorData = _proctorService.GetAllData();
-            var reserveTimeData = _reserveTimeService.GetAllData();
-            var testerData = _testerService.GetAllData();
             var DataList = new List<TestReserveViewModel>();
+            DataList = _testReserveService.GetAllTestReserveData();
 
-            foreach(var combinedData in proctorData
-                        .Zip(reserveTimeData, (proctor, reserveTime) => new { Proctor = proctor, ReserveTime = reserveTime })
-                        .Zip(testerData, (combined, tester) => new { Proctor = combined.Proctor, ReserveTime = combined.ReserveTime, Tester = tester }))
-            {
-                var Data = new TestReserveViewModel()
-                {
-                    test_id = combinedData.Proctor.test_id,
-                    test_title = combinedData.Proctor.test_title,
-                    tester_name = combinedData.Tester.name,
-                    proctor_id = combinedData.Proctor.proctor_id,
-                    proctor_name = combinedData.Proctor.name,
-                    reservedate = combinedData.ReserveTime.reservedate,
-                    reservetime = combinedData.ReserveTime.reservetime,
-                    is_success = combinedData.Tester.is_success,
-                    is_fail = combinedData.Tester.is_pass,
-                    tester_id = combinedData.Tester.tester_id,
-                    members_id = combinedData.Tester.members_id,
-                    reservetime_id = combinedData.ReserveTime.reservetime_id
-                };
-                DataList.Add(Data);
-            }       
             return Ok(DataList);
         }
 
@@ -102,30 +118,34 @@ namespace LabWeb.Controllers
         }
 
         [HttpGet("ReadOneData")]
-        public IActionResult ReadTestResever([FromBody]TestReserveForReadID ReadID)
+        public IActionResult ReadTestResever([FromQuery]Guid Id)
         {
             Proctor proctor = new Proctor();
             ReserveTime reserveTime = new ReserveTime();
-            Tester tester = new Tester();
             TestReserveViewModel Data = new TestReserveViewModel();
             try
             {
-                proctor = _proctorService.GetDataById(ReadID.proctor_id);
-                reserveTime = _reserveTimeService.GetDataById(ReadID.reservetime_id);
-                tester = _testerService.GetDataById(ReadID.tester_id);
+                reserveTime = _reserveTimeService.GetDataById(Id);
 
+                Data.proctor_id = reserveTime.proctor_id;
+                proctor = _proctorService.GetDataById(Data.proctor_id);
+                Data.reservetime_id = Id;
+                Data.test_id = proctor.test_id;
+                Data.create_id = proctor.create_id;
+                Data.update_id = proctor.update_id;
+                Data.members_id = proctor.members_id;
                 Data.proctor_name = proctor.name;
                 Data.test_title = proctor.test_title;
                 Data.reservedate = reserveTime.reservedate;
                 Data.reservetime = reserveTime.reservetime;
-                Data.tester_name = tester.name;
 
+                var MemberData = _membersDBService.GetDataButOnlyIdAndName();
                 if(Data == null)
                 {
                     return BadRequest("NODATA");
                 }
 
-                return Ok(Data);
+                return Ok(new{Data,MemberData});
             }
             catch(Exception e)
             {
@@ -134,27 +154,23 @@ namespace LabWeb.Controllers
         }
 
         [HttpPut("UpdateTestResever")]
-        public IActionResult UpdateTestResever([FromBody]TestReserveForUpdateID updateData)
+        public IActionResult UpdateTestResever([FromQuery]Guid Id,[FromBody]TestReserveForUpdateID updateData)
         {
             Proctor proctor = new Proctor();
             ReserveTime reserveTime = new ReserveTime();
 
             try
             {
-                proctor = _proctorService.GetDataById(updateData.Oldproctor_id);
-                reserveTime = _reserveTimeService.GetDataById(updateData.Oldreservetime_id);
+                reserveTime = _reserveTimeService.GetDataById(Id);
+                proctor = _proctorService.GetDataById(reserveTime.proctor_id);
 
-                proctor.proctor_id = updateData.Newproctor_id;
-                proctor.test_id = updateData.Newtest_id;
+                proctor.members_id = updateData.Newmember_id;
                 proctor.update_id = _getLoginClaimService.GetMembers_id();
-
-                reserveTime.reservetime_id = updateData.Newreservetime_id;
-                reserveTime.proctor_id = updateData.Newproctor_id;
+                _proctorService.UpdateProctor(proctor);
+                
                 reserveTime.reservedate = updateData.reservedate;
                 reserveTime.reservetime = updateData.reservetime;
                 reserveTime.update_id = _getLoginClaimService.GetMembers_id();
-
-                _proctorService.UpdateProctor(proctor);
                 _reserveTimeService.UpdateReserveTime(reserveTime);
             }
             catch(Exception e)
@@ -167,11 +183,11 @@ namespace LabWeb.Controllers
         }
 
         [HttpDelete("DeleteData")]
-        public IActionResult DeleteTesterReserve([FromBody]TestReserveForReadID DeleteID)
+        public IActionResult DeleteTesterReserve([FromQuery]Guid Id)
         {
-            _proctorService.SoftDeleteProctorById(DeleteID.proctor_id);
-            _reserveTimeService.SoftDeleteReserveTimeById(DeleteID.reservetime_id);
-            _testerService.SoftDeleteTesterById(DeleteID.tester_id);
+            var ReserveData = _reserveTimeService.GetDataById(Id);
+            _proctorService.SoftDeleteProctorById(ReserveData.proctor_id);
+            _reserveTimeService.SoftDeleteReserveTimeById(Id);
             return Ok();
         }
 
