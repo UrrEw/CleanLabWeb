@@ -473,6 +473,41 @@ namespace LabWeb.Service
             return DataList;
         }
 
+        public List<Members> GetDataButOnlyIdAndNameAndSearch(string Search)
+        {
+            
+            string sql = $@"SELECT members_id,name FROM MEMBERS WHERE authcode = '' AND name LIKE '%' + @Search + '%';";
+            var DataList = new List<Members>();
+            try
+            {
+                 if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Search",Search);
+                SqlDataReader dr = cmd.ExecuteReader();
+                while(dr.Read())
+                {
+                    Members Data = new Members();
+                    Data.members_id = (Guid)dr["members_id"];
+                    Data.name = dr["name"].ToString();
+
+                    DataList.Add(Data);
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return DataList;
+        }
+
         public List<Members> GetDataButSenior()
         {
             

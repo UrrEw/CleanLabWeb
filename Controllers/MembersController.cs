@@ -203,10 +203,19 @@ public class MembersController : ControllerBase
     #endregion
 
     [HttpGet("GetIDList")]
-    public ActionResult GetIDList()
+    
+    public ActionResult GetIDList([FromQuery]string Search="")
     {
-        var Data = _membersSerivce.GetDataButOnlyIdAndName();
+        if (!string.IsNullOrEmpty(Search))
+        {
+            var Data = _membersSerivce.GetDataButOnlyIdAndNameAndSearch(Search);
         return Ok(Data); 
+        }
+        else
+        {
+            var Data = _membersSerivce.GetDataButOnlyIdAndName();
+            return Ok(Data);
+        } 
     }
 
     [HttpGet("GetLoginRole")]
